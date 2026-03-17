@@ -1,21 +1,14 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
-  <div class="grid grid--cols-2 gap--small h--full">
-    {% render "now_panel", panel_classes: "rounded p--1 flex flex--col gap--xsmall text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", event: primary_event, label: primary_label, value_classes: "value value--small md:value--medium", detail_classes: "label label--small label--inverted", fit_height: 88, empty_value_classes: "value value--small md:value--medium" %}
-
-    {% render "next_panel", panel_classes: "outline rounded p--1 flex flex--col gap--xsmall", next_event: display_next_event, title_classes: "title title--small", time_classes: "label label--small" %}
-
-    {% render "later_panel", panel_classes: "outline rounded p--1 flex flex--col gap--xsmall", meta: upcoming_count, events: events, next_event: next_event, now_ts: now_ts, later_limit: 2, wrapper_classes: "flex flex--col gap--xsmall", row_classes: "flex flex--row flex--between gap--xsmall", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Quiet", item_style: "row", all_day_label: "DAY", skip_extra_event: display_next_event %}
-
-    <div class="outline rounded p--1 flex flex--col flex--between">
-      <div class="label label--small label--underline">CONTEXT</div>
-      <div class="value value--small md:value--medium value--tnums">{{ current_time_label }}</div>
-      <div class="title title--small">{{ current_date_label }}</div>
-    </div>
-  </div>
+  {% if primary_event != blank %}
+    {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
+  {% else %}
+    {% assign hero_meta = blank %}
+  {% endif %}
+  {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--full text--white bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xxxlarge", fit_height: 130, fit_height_lg: 280, empty_value: "FREE" %}
   {% else %}
   {% render "error_state", size: "quadrant" %}
   {% endif %}
 </div>
 
-{% render "title_bar", title: plugin_title, instance: "2 x 2" %}
+{% render "title_bar", title: plugin_title, instance: "Now" %}

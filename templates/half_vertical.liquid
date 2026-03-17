@@ -1,21 +1,20 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
-  <div class="grid grid--cols-2 portrait:grid--cols-1 gap--medium h--full">
-    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small flex--center-y text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, event: primary_event, label: primary_label, value_classes: "value value--xlarge md:value--xxlarge", detail_classes: "title title--small md:title--medium", fit_height: 200, empty_value_classes: "value value--xlarge md:value--xxlarge", empty_detail: "No events today", empty_detail_classes: "description" %}
+  {% if primary_event != blank %}
+    {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
+  {% else %}
+    {% assign hero_meta = blank %}
+  {% endif %}
+  <div class="flex flex--col gap--small h--full">
 
-    <div class="flex flex--col gap--medium h--full">
-      {% if is_free and next_event != blank %}
-      {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall h--full", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall text--left", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
-      {% else %}
-      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", next_event: next_event, title_classes: "title title--small md:title--medium", time_classes: "value value--xsmall md:value--small value--tnums", empty_detail: "Nothing urgent next." %}
+    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[67cqh] text--white bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xxxlarge", fit_height: 200, fit_height_lg: 370, empty_value: "FREE", empty_detail: "Nothing scheduled today", empty_detail_classes: "description" %}
 
-      {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall text--left", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
-      {% endif %}
-    </div>
+    {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall grow", next_event: display_next_event, title_classes: "value value--xsmall md:value--small lg:value--base", time_classes: "value md:value--xsmall lg:value--medium", inverted: false, empty_detail: "Nothing next." %}
+
   </div>
   {% else %}
   {% render "error_state", size: "half" %}
   {% endif %}
 </div>
 
-{% render "title_bar", title: plugin_title, instance: "Left / Right" %}
+{% render "title_bar", title: plugin_title, instance: "Top / Bottom" %}

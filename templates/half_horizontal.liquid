@@ -1,23 +1,22 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
-  <div class="flex flex--col gap--medium h--full">
-    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--xsmall h--[50cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, event: primary_event, label: primary_label, value_classes: "value value--xlarge md:value--xxlarge", detail_classes: "title title--small md:title--medium", fit_height: 140, empty_value_classes: "value value--xlarge md:value--xxlarge" %}
+  {% if primary_event != blank %}
+    {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
+  {% else %}
+    {% assign hero_meta = blank %}
+  {% endif %}
+  <div class="grid grid--cols-3 gap--small h--full">
 
-    {% if is_free and next_event != blank %}
-    <div class="outline rounded--large p--2 flex flex--col gap--xsmall" style="flex: 1;">
-      {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
-    </div>
-    {% else %}
-    <div class="grid grid--cols-2 gap--medium">
-      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", next_event: next_event, title_classes: "title title--small md:title--medium", time_classes: "value value--xsmall md:value--small value--tnums", empty_detail: "No more timed events." %}
+    {% render "now_panel", panel_classes: "col--span-2 rounded--large p--2 flex flex--col gap--small text--white bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xxxlarge", fit_height: 110, fit_height_lg: 230, empty_value: "FREE", empty_detail: "Nothing scheduled today", empty_detail_classes: "description" %}
 
-      {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
+    <div class="flex flex--col gap--small h--full">
+      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall grow", next_event: display_next_event, title_classes: "value value--xsmall md:value--small lg:value--large", time_classes: "value value--xsmall md:value--small", inverted: false, empty_detail: "Nothing next." %}
     </div>
-    {% endif %}
+
   </div>
   {% else %}
   {% render "error_state", size: "half" %}
   {% endif %}
 </div>
 
-{% render "title_bar", title: plugin_title, instance: "Top / Bottom" %}
+{% render "title_bar", title: plugin_title, instance: "Left / Right" %}
