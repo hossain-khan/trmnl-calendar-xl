@@ -1,6 +1,6 @@
 {% comment %}
   DEMO: half_horizontal — active NOW event state.
-  Two-column layout: LEFT hero (NOW, ~67% / col--span-2 of 3) | RIGHT stack (NEXT + LATER, ~33%)
+  Two-column layout: LEFT hero (NOW, ~67% / col--span-2 of 3) | RIGHT NEXT panel (~33%)
   All HTML inlined (no render calls). Static data for responsive testing.
 
   Devices tested:
@@ -22,8 +22,8 @@
 
       {% comment %} Label row: section tag left, event time right {% endcomment %}
       <div class="flex flex--row flex--between flex--center-y gap--xsmall">
-        <span class="label label--small label--inverted">NOW</span>
-        <span class="label label--small label--inverted">2:15 PM – 3:15 PM</span>
+        <span class="label lg:label--large label--inverted">NOW</span>
+        <span class="label lg:label--large label--inverted">2:15 PM – 3:15 PM</span>
       </div>
 
       {% comment %} Hero title — sm/md (TRMNL OG half_horizontal ≈ 240px tall) {% endcomment %}
@@ -43,45 +43,18 @@
     ============================================================ {% endcomment %}
     <div class="flex flex--col gap--small h--full">
 
-      {% comment %} --- NEXT panel (grows to take half of column height) --- {% endcomment %}
+      {% comment %} --- NEXT panel (fills full column height) --- {% endcomment %}
       <div class="outline rounded--large p--2 flex flex--col gap--xsmall grow">
 
         {% comment %} Section label {% endcomment %}
-        <span class="label label--small label--underline">NEXT</span>
+        <span class="label lg:label--large label--underline">NEXT</span>
 
         {% comment %} Event title — scales up on TRMNL X {% endcomment %}
-        <div class="title title--small md:title--medium" data-clamp="3">HOSSAIN BADMINTON 🏸</div>
+        <div class="title lg:title--large md:title--medium" data-clamp="3">HOSSAIN BADMINTON 🏸</div>
 
         {% comment %} Event time {% endcomment %}
-        <div class="value value--xsmall md:value--small value--tnums">8:00 PM – 9:30 PM</div>
+        <div class="value value--xsmall md:value--small">8:00 PM – 9:30 PM</div>
 
-      </div>
-
-      {% comment %} --- LATER panel (grows to take half of column height) --- {% endcomment %}
-      <div class="outline rounded--large p--2 flex flex--col gap--xsmall grow">
-
-        {% comment %} Section label {% endcomment %}
-        <span class="label label--small label--underline">LATER</span>
-
-        {% comment %} Later items list — compact for narrow column {% endcomment %}
-        <div class="flex flex--col gap--xsmall">
-
-          <div>
-            <div class="title title--small" data-clamp="1">GO TO BRAMPTON FOR EID</div>
-            <span class="label label--small">ALL DAY</span>
-          </div>
-
-          <div>
-            <div class="title title--small" data-clamp="1">BLUE BOX AND GREEN BIN</div>
-            <span class="label label--small">ALL DAY</span>
-          </div>
-
-          <div>
-            <div class="title title--small" data-clamp="1">HOCKEY WITH THE BOYS</div>
-            <span class="label label--small">7:00 PM</span>
-          </div>
-
-        </div>
       </div>
 
     </div>
