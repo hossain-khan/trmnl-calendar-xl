@@ -37,7 +37,7 @@
   {% endfor %}
 
   <div class="flex flex--col gap--medium h--full">
-    <div class="rounded--large p--2 flex flex--col gap--xsmall 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="flex: 1; color: white;">
+    <div class="rounded--large p--2 flex flex--col gap--xsmall h--[42cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black">
       {% render "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
       {% if current_event != blank %}
       <div class="value value--large md:value--xlarge" data-value-fit="true" data-value-fit-max-height="120">{{ current_event.summary | upcase }}</div>
@@ -47,7 +47,7 @@
       {% endif %}
     </div>
 
-    <div class="grid grid--cols-2 gap--medium" style="flex: 1;">
+    <div class="grid grid--cols-2 gap--medium">
       <div class="outline rounded--large p--2 flex flex--col gap--xsmall">
         {% render "section_label", text: "NEXT", inverted: false, icon: next_icon %}
         {% if next_event != blank %}

@@ -42,7 +42,7 @@
   {% endfor %}
 
   <div class="flex flex--col gap--medium h--full">
-    <div class="rounded--large p--2 flex flex--col gap--small 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="flex: 2; color: white;">
+    <div class="rounded--large p--2 flex flex--col gap--small h--[42cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black">
       {% render "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
       {% if current_event != blank %}
       <div class="value value--large md:value--xxlarge lg:value--xxxlarge" data-value-fit="true" data-value-fit-max-height="250">
@@ -55,7 +55,7 @@
       {% endif %}
     </div>
 
-    <div class="grid grid--cols-2 gap--medium" style="flex: 1;">
+    <div class="grid grid--cols-2 gap--medium">
       <div class="outline rounded--large p--2 flex flex--col gap--small">
         {% render "section_label", text: "NEXT", meta: current_date_label, inverted: false, icon: next_icon %}
         {% if next_event != blank %}
@@ -70,7 +70,7 @@
       <div class="outline rounded--large p--2 flex flex--col gap--small">
         {% capture later_meta %}{{ upcoming_count }} UPCOMING{% endcapture %}
         {% render "section_label", text: "LATER", meta: later_meta, inverted: false, icon: later_icon %}
-        <div class="flex flex--col gap--xsmall" style="flex: 1;">
+        <div class="flex flex--col gap--xsmall">
           {% assign later_count = 0 %}
           {% for event in events %}
             {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}

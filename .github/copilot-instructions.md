@@ -98,6 +98,15 @@ trmnl-calendar-xl/
 
 **Reference**: [Device Models API](https://trmnl.com/api/models) • [Framework Documentation](https://trmnl.com/framework)
 
+### Instructions
+
+- Use Framework v2 (current). Framework v1 is deprecated and should not be referenced.
+- All framework CSS classes use the `--` separator (e.g., `w--full`, `bg--black`, `gap--md`).
+- Framework is designed for e-paper displays: 1-bit (black/white) and 2-bit (4 shades of gray).
+- Layouts are built with `view`, `layout`, `title_bar`, and `columns` primitives.
+- Use the Overflow and Clamp engines for handling content that exceeds available space.
+- The framework runtime automatically adapts layouts to device bit-depth and orientation.
+
 ### Responsive System
 
 The framework uses a **mobile-first** approach with responsive dimensions:

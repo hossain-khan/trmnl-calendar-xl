@@ -41,7 +41,7 @@
   {% endfor %}
 
   <div class="grid grid--cols-2 gap--small h--full">
-    <div class="rounded p--1 flex flex--col gap--xsmall 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="color: white;">
+    <div class="rounded p--1 flex flex--col gap--xsmall text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black">
       {% render "section_label", text: "NOW", inverted: true, icon: now_icon %}
       {% if current_event != blank %}
       <div class="value value--small md:value--medium" data-value-fit="true" data-value-fit-max-height="88">{{ current_event.summary | upcase }}</div>
