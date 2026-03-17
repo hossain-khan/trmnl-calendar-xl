@@ -1,24 +1,22 @@
-# TRMNL Plugin - Copilot Instructions Template
+# TRMNL Calendar XL - Copilot Instructions
 
-> **Note**: This is a generic template for TRMNL plugin projects. Replace placeholders with your project-specific information.
-
-> **Repository**: [your-username/your-repo-name](https://github.com/your-username/your-repo-name)  
-> **Author**: Your Name  
-> **Last Updated**: [Current Date]
+> **Repository**: [hossain-khan/trmnl-calendar-xl](https://github.com/hossain-khan/trmnl-calendar-xl)  
+> **Author**: Hossain Khan  
+> **Last Updated**: March 17, 2026
 
 ## Project Overview
 
-[Provide a brief description of what your TRMNL plugin does, its key features, and the value it provides to users]
+Calendar XL is a TRMNL plugin for a highly glanceable agenda view. The product goal is not to show a dense event list. It is to surface the current event, the next event, and a short list of later items with strong hierarchy and distance-readable typography.
 
 ### Key Goals
 
-1. **[Goal 1]**: [Description]
-2. **[Goal 2]**: [Description]
-3. **[Goal 3]**: [Description]
+1. **Make NOW obvious**: The active event should dominate each layout and still read clearly from a distance.
+2. **Reduce scanning cost**: NEXT and LATER should answer what comes after the current event without forcing users to parse a full agenda.
+3. **Handle idle time cleanly**: When no event is active, the plugin should explicitly communicate `FREE` instead of showing an empty block.
 
 ### Current Status
 
-[Describe the current state of the project - what's complete, what's in progress, what's planned]
+The repository now contains project-specific layouts and configuration for the initial Now / Next / Later concept. The next implementation phase is wiring a real calendar backend to emit the derived fields these templates expect.
 
 ## Getting Started
 
@@ -26,15 +24,16 @@ For developers working on this project:
 
 1. **Understand the Project**: Read this file completely for comprehensive context
 2. **Review Documentation**:
-   - `README.md` - Project overview and installation
-   - [List any other relevant documentation files]
+  - `README.md` - Project overview and data contract
+  - `docs/PRD.md` - Product requirements and layout intent
+  - `GETTING_STARTED.md` - Backend and testing checklist
 3. **Test Templates**: Preview layouts in TRMNL Markup Editor or locally
 4. **Review Framework**: Familiarize yourself with [TRMNL Framework](https://trmnl.com/framework)
 
 ## Project Structure
 
 ```
-your-plugin-name/
+trmnl-calendar-xl/
 ├── .github/                      # GitHub configuration
 │   ├── workflows/               # GitHub Actions (if applicable)
 │   └── copilot-instructions.md  # This file
@@ -76,7 +75,7 @@ your-plugin-name/
 - Include common variables and logic
 - Use `{% render %}` to include shared templates in main layouts
 
-**Critical Rule**: Keep templates DRY (Don't Repeat Yourself). Extract common patterns into shared templates.
+**Critical Rule**: Keep templates DRY (Don't Repeat Yourself). Extract common agenda patterns into shared templates so layout-specific files only define composition.
 
 ## TRMNL Framework v2
 

@@ -1,243 +1,84 @@
-# Getting Started with This Template
+# Getting Started
 
-This guide walks you through setting up your TRMNL plugin using this template.
+This repository is no longer a generic template. It is scoped to the Calendar XL concept from the Now / Next / Later PRD.
 
-## Step 1: Clone the Repository
+## 1. Connect a Calendar Source
 
-This template is already in place. You can now customize it for your specific plugin.
+Set a real backend endpoint in [settings.yml](settings.yml):
 
-## Step 2: Customize Configuration Files
-
-### Update `settings.yml`
-
-1. Change the `polling_url` to your backend API endpoint:
-   ```yaml
-   polling_url: "https://your-api.example.com/plugin/data"
-   ```
-
-2. Adjust `refresh_frequency` based on your data update frequency:
-   - Fast data: 5-15 minutes
-   - Medium: 15-30 minutes
-   - Slow changing: 30-60+ minutes
-
-3. Update the `name` and `description`:
-   ```yaml
-   name: "My Cool Plugin"
-   description: "Displays important information from my service"
-   ```
-
-4. Keep or remove layout types based on what you want to support:
-   ```yaml
-   layouts:
-     - full                    # Always keep full
-     - half_horizontal         # Optional
-     - half_vertical           # Optional
-     - quadrant                # Optional
-   ```
-
-### Update `custom-fields.yml`
-
-1. Remove example fields you don't need
-2. Add your required fields (API keys, preferences, etc.)
-3. Use appropriate field types for validation
-
-Example:
 ```yaml
-- key: "api_key"
-  type: "text"
-  label: "OpenWeather API Key"
-  required: true
-  description: "Get from openweathermap.org"
-
-- key: "city"
-  type: "text"
-  label: "City Name"
-  required: true
-  placeholder: "New York"
+polling_url: "https://your-calendar-api.example.com/trmnl/agenda"
 ```
 
-## Step 3: Edit Template Files
+The backend is responsible for:
 
-### 1. Start with `shared.liquid`
+- Fetching raw calendar events
+- Deriving `current_event`, `next_event`, and `later_events`
+- Formatting user-facing time labels
+- Respecting plugin settings such as `max_later_items` and `time_format`
 
-Update or add reusable components:
+## 2. Configure the Plugin Fields
 
-```liquid
-{% template my_custom_component %}
-<div class="flex flex--col gap--small">
-  <span class="value value--large">{{ value }}</span>
-  <span class="label">{{ label }}</span>
-</div>
-{% endtemplate %}
+The current fields in [custom-fields.yml](custom-fields.yml) are aligned with the PRD and cover the MVP configuration:
+
+- Calendar feed URL
+- Maximum number of LATER items
+- Show all-day events
+- 12h or 24h time formatting
+- Compact mode
+- Optional section icons
+- Custom title override
+
+## 3. Use the Sample Payload
+
+Start with [assets/demo/sample-data.json](assets/demo/sample-data.json) in the TRMNL Markup Editor. It exercises all three agenda sections and the date/time context used by the quadrant layout.
+
+## 4. Verify the Layouts
+
+Test each template against the PRD:
+
+- [templates/full.liquid](templates/full.liquid): NOW dominates, NEXT and LATER support.
+- [templates/half_horizontal.liquid](templates/half_horizontal.liquid): NOW on top, supporting agenda below.
+- [templates/half_vertical.liquid](templates/half_vertical.liquid): NOW left, future agenda right.
+- [templates/quadrant.liquid](templates/quadrant.liquid): compact four-block dashboard.
+
+## 5. Check Edge Cases
+
+Before wiring this into a real calendar backend, verify:
+
+- No current event shows `FREE`
+- No next event shows a clear fallback
+- Long titles clamp without breaking layout
+- All-day events can be excluded or included in LATER
+- Back-to-back meetings switch NOW and NEXT cleanly at minute boundaries
+
+## 6. Backend Output Example
+
+```json
+{
+  "has_data": true,
+  "current_date_label": "MON, MAR 16",
+  "current_time_label": "14:32",
+  "context_label": "3 UPCOMING",
+  "current_event": {
+    "title": "DEEP WORK",
+    "time_label": "14:00 - 16:00",
+    "is_free": false
+  },
+  "next_event": {
+    "title": "BATH",
+    "time_label": "19:45 - 20:15"
+  },
+  "later_events": [
+    { "title": "PARTY", "time_label": "17:00" },
+    { "title": "TECH TALK", "time_label": "11:30" }
+  ]
+}
 ```
 
-### 2. Update `full.liquid`
+## 7. Refresh Expectations
 
-Replace the example content with your actual plugin display:
-
-```liquid
-<div class="layout">
-  {% if has_data %}
-    <!-- Your main content here -->
-    <div class="flex flex--center-x flex--center-y h--full">
-      <div class="text--center">
-        <div class="value value--large md:value--xlarge">
-          {{ your_data }}
-        </div>
-        <div class="title title--medium">
-          {{ your_title }}
-        </div>
-      </div>
-    </div>
-  {% else %}
-    {% render "shared", template_name: "error_state", size: "full" %}
-  {% endif %}
-</div>
-
-<div class="title_bar">
-  <span class="title md:title--large">{{ plugin_name }}</span>
-</div>
-```
-
-### 3. Update Other Layouts
-
-- `half_horizontal.liquid` - Side-by-side content
-- `half_vertical.liquid` - Stacked content
-- `quadrant.liquid` - Minimal compact display
-
-## Step 4: Test in TRMNL Markup Editor
-
-1. Go to [editor.trmnl.com](https://editor.trmnl.com)
-2. Copy your template code into the editor
-3. Add your sample JSON data:
-   ```json
-   {
-     "has_data": true,
-     "your_data": "42",
-     "your_title": "Example"
-   }
-   ```
-4. Preview on different device sizes
-5. Verify responsive behavior
-
-## Step 5: Set Up Your Backend
-
-Create an API endpoint that returns JSON:
-
-### Example with Node.js/Express:
-
-```javascript
-app.get('/plugin/data', (req, res) => {
-  const data = {
-    has_data: true,
-    your_data: "42",
-    your_title: "Example Value",
-    status: "success"
-  };
-  res.json(data);
-});
-```
-
-### Example with Python/Flask:
-
-```python
-@app.route('/plugin/data')
-def get_plugin_data():
-    return {
-        'has_data': True,
-        'your_data': '42',
-        'your_title': 'Example Value',
-        'status': 'success'
-    }
-```
-
-**Important**: 
-- ✅ Return valid JSON
-- ✅ Use HTTPS only
-- ✅ Respond in <3 seconds
-- ✅ Include error handling
-
-## Step 6: Update Documentation
-
-Update `.github/copilot-instructions.md`:
-
-1. Replace the placeholder header:
-   ```markdown
-   > **Repository**: [your-username/your-repo]
-   > **Author**: Your Name
-   > **Last Updated**: January 2026
-   ```
-
-2. Fill in your project overview section
-
-3. Document your data structure
-
-4. Add any project-specific patterns
-
-See [TEMPLATE_USAGE.md](TEMPLATE_USAGE.md) for detailed customization instructions.
-
-## Step 7: Test Everything
-
-### Manual Testing Checklist
-
-- [ ] Layouts render correctly in markup editor
-- [ ] Responsive behavior works (test sm, md, lg)
-- [ ] Error state displays when `has_data: false`
-- [ ] Text truncation works with long content
-- [ ] Images display correctly
-- [ ] Portrait mode rendering works
-- [ ] Backend API returns valid data
-- [ ] Data updates at correct frequency
-
-### Edge Cases to Test
-
-- Empty/minimal data
-- Very long text (100+ characters)
-- Special characters and unicode
-- Null/undefined values
-- Missing optional fields
-- API timeout/error responses
-
-## Step 8: Ready to Deploy!
-
-When everything is tested:
-
-1. Push your code to GitHub
-2. Create a plugin recipe in TRMNL Dashboard
-3. Upload your templates and assets
-4. Submit for review
-5. Deploy your backend API
-
-## Useful Variables
-
-### TRMNL Platform Variables
-
-```liquid
-<!-- User info -->
-{{ trmnl.user.first_name }}
-{{ trmnl.user.timezone }}
-
-<!-- Plugin settings -->
-{{ trmnl.plugin_settings.instance_name }}
-{{ trmnl.plugin_settings.custom_fields_values.field_key }}
-
-<!-- Device info -->
-{{ trmnl.device.model }}
-{{ trmnl.device.orientation }}
-```
-
-### Data Filters
-
-```liquid
-<!-- Formatting -->
-{{ text | truncate: 50 }}
-{{ number | number_with_delimiter }}
-{{ date | date: "%B %d, %Y" }}
-{{ date | relative_time }}
-
-<!-- Default values -->
-{{ missing_field | default: "N/A" }}
-```
+The plugin is configured to refresh every minute. If your backend caches responses, keep the cache window below 60 seconds or NOW and NEXT will drift during event transitions.
 
 ## Framework Classes Reference
 

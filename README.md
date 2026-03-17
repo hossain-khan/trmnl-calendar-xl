@@ -1,263 +1,108 @@
-# TRMNL Plugin Template
+# Calendar XL
 
-A complete, production-ready starter template for building custom plugins for [TRMNL](https://trmnl.com) devices. This template provides everything you need to create, test, and deploy a TRMNL plugin.
+Calendar XL is a TRMNL agenda plugin that turns a busy calendar into a large-text status display. It prioritizes three questions from the PRD: what is happening now, what is next, and what matters later.
 
-## 🚀 Quick Start
+## Purpose
 
-### Prerequisites
+The plugin is designed for glanceability at distance rather than completeness. Instead of rendering a dense agenda list, each layout gives the current event dominant space, keeps the next event obvious, and compresses later items into a short supporting list.
 
-- Understanding of [TRMNL Framework](https://trmnl.com/framework)
-- Familiarity with [Liquid templating](https://shopify.github.io/liquid/)
-- A backend service for data fetching (for polling strategy)
+## Layout Model
 
-### Getting Started
+### Full
 
-1. **Clone this repository** as your starting point:
-   ```bash
-   git clone https://github.com/your-username/your-plugin-name.git
-   cd your-plugin-name
-   ```
+- NOW takes the top half of the screen with inverted treatment and the largest type.
+- NEXT gets a dedicated secondary panel.
+- LATER shows up to 2 to 3 compact items.
 
-2. **Customize the template files**:
-   - Update `settings.yml` with your plugin configuration
-   - Update `custom-fields.yml` with your form fields
-   - Edit templates in `templates/` folder to your design
+### Half Horizontal
 
-3. **Update the copilot instructions**:
-   - Edit `.github/copilot-instructions.md` with your project details
-   - Follow the [Template Usage Guide](https://github.com/hossain-khan/trmnl-plugin-template/blob/main/.github/TEMPLATE_USAGE.md)
+- NOW fills the top half.
+- The bottom half splits into NEXT and LATER.
 
-4. **Test in TRMNL Markup Editor**:
-   - Copy a template to the [TRMNL Markup Editor](https://editor.trmnl.com)
-   - Preview across different device sizes
-   - Test with sample data
+### Half Vertical
 
-## 📁 Project Structure
+- NOW is isolated on the left.
+- NEXT and LATER stack on the right for quick left-to-right scanning.
 
-```
-your-plugin-name/
-├── .github/
-│   ├── copilot-instructions.md    # AI assistant context (customize this!)
-│   └── TEMPLATE_USAGE.md           # Instructions for using the template
-├── assets/
-│   ├── icon/                       # Your plugin icon(s)
-│   └── demo/                       # Demo screenshots
-├── templates/
-│   ├── shared.liquid               # Reusable components
-│   ├── full.liquid                 # Full-screen layout
-│   ├── half_horizontal.liquid      # Side-by-side layout
-│   ├── half_vertical.liquid        # Stacked layout
-│   └── quadrant.liquid             # Compact corner layout
-├── settings.yml                    # Plugin configuration
-├── custom-fields.yml               # Form field definitions
-├── LICENSE                         # License (MIT by default)
-└── README.md                       # This file
-```
+### Quadrant
 
-## 🎨 Template Files
+- NOW, NEXT, LATER, and date/time each get one quadrant.
 
-### Core Templates
+## Data Contract
 
-- **`shared.liquid`**: Reusable components and utility templates
-  - Error state component
-  - Data display components
-  - Metric cards
-  - Status badges
-  - Title bar template
-
-- **`full.liquid`**: Full-screen plugin display
-  - Best for main data presentation
-  - Padding: `p--2` (standard)
-  - Includes optional secondary content area
-
-- **`half_horizontal.liquid`**: Side-by-side layout
-  - Best for comparative displays
-  - Main content on left/right side
-  - Responsive: switches to vertical on portrait
-  - Constrained secondary content
-
-- **`half_vertical.liquid`**: Stacked layout
-  - Best for primary + secondary content
-  - Primary content fills space
-  - Secondary content at bottom
-  - Compact spacing
-
-- **`quadrant.liquid`**: Quarter-size compact display
-  - Minimal information only
-  - Tight padding (`p--1`)
-  - Every pixel counts
-
-### Layout Previews
-
-| Full Layout | Half Horizontal |
-|---|---|
-| ![Full Layout Preview](assets/demo/preview-full.png) | ![Half Horizontal Preview](assets/demo/preview-half-horizontal.png) |
-| **Half Vertical** | **Quadrant** |
-| ![Half Vertical Preview](assets/demo/preview-half-vertical.png) | ![Quadrant Preview](assets/demo/preview-quadrant.png) |
-
-## ⚙️ Configuration Files
-
-### `settings.yml`
-
-Configure your plugin's behavior:
-
-```yaml
-strategy: "polling"                    # How to fetch data: polling, webhook, static
-polling_url: "https://api.example.com" # Endpoint to fetch data from
-refresh_frequency: 15                  # Update interval in minutes (1-1440)
-layouts: [full, half_horizontal, ...]  # Available layout types
-```
-
-**Strategy Options**:
-- **polling**: TRMNL fetches data at specified intervals (best for most plugins)
-- **webhook**: You push data to TRMNL when it changes (lower latency)
-- **static**: Hardcoded data (simple displays)
-
-### `custom-fields.yml`
-
-Define user-facing form fields:
-
-```yaml
-- key: "api_key"
-  type: "text"
-  label: "API Key"
-  required: true
-
-- key: "data_source"
-  type: "select"
-  options:
-    - label: "Option A"
-      value: "a"
-```
-
-**Field Types**: `text`, `long_text`, `select`, `checkbox`, `number`, `url`, `email`
-
-Access in templates:
-```liquid
-{{ trmnl.plugin_settings.custom_fields_values.api_key }}
-```
-
-## 🎯 Key Features
-
-### Responsive Design
-- Supports 4+ device sizes (600px - 1024px+ widths)
-- Breakpoint system: `sm:`, `md:`, `lg:`
-- Portrait orientation support: `portrait:`
-- Bit-depth variants: `1bit:`, `2bit:`, `4bit:`, `8bit:`
-
-### TRMNL Framework Utilities
-All templates use framework utilities for consistency:
-
-**Layout**: `flex`, `flex--row`, `flex--col`, `grid`, `gap--*`, `h--full`
-**Typography**: `title`, `value`, `label`, `description`
-**Visual**: `bg--white`, `rounded`, `outline`, `text--center`
-
-Example:
-```liquid
-<div class="flex flex--row gap--medium h--full">
-  <span class="value value--large md:value--xlarge">42</span>
-  <span class="title md:title--large">Example</span>
-</div>
-```
-
-### Error States
-All templates include error state fallbacks for unconfigured plugins:
-
-```liquid
-{% if has_data %}
-  <!-- Show plugin content -->
-{% else %}
-  <!-- Show helpful error message -->
-  {% render "shared", template_name: "error_state", size: "full" %}
-{% endif %}
-```
-
-### Reusable Components
-`shared.liquid` provides ready-to-use components:
-
-```liquid
-{% render "shared", template_name: "data_display", value: "42", label: "Value" %}
-{% render "shared", template_name: "metric_card", number: "100", label: "Metric" %}
-{% render "shared", template_name: "status_badge", status: "success", message: "All good!" %}
-```
-
-## 🔄 Data Flow
-
-### Polling Strategy (Default)
-
-```
-1. User configures plugin in TRMNL
-2. TRMNL sends GET request to polling_url at refresh_frequency
-3. Your backend fetches/generates data
-4. Backend returns JSON with template variables
-5. TRMNL merges JSON into templates
-6. Rendered content sent to e-ink display
-```
-
-Your backend should return JSON like:
+The backend should send derived agenda state rather than raw calendar events so the templates can remain simple.
 
 ```json
 {
   "has_data": true,
-  "title": "Example Value",
-  "value": 42,
-  "status": "success",
-  "metadata": "Last updated: 2 minutes ago"
+  "current_date_label": "MON, MAR 16",
+  "current_time_label": "14:32",
+  "context_label": "3 UPCOMING",
+  "current_event": {
+    "title": "DEEP WORK",
+    "time_label": "14:00 - 16:00",
+    "is_free": false
+  },
+  "next_event": {
+    "title": "BATH",
+    "time_label": "19:45 - 20:15"
+  },
+  "later_events": [
+    { "title": "PARTY", "time_label": "17:00" },
+    { "title": "TECH TALK", "time_label": "11:30" }
+  ]
 }
 ```
 
-Template accesses via:
-```liquid
-{{ title }}
-{{ value }}
-{{ status }}
-{{ metadata }}
+Recommended backend derivation:
+
+```ts
+currentEvent = first event where start <= now && now < end
+nextEvent = first event where start > now
+laterEvents = events after nextEvent, limited by maxLaterItems
 ```
 
-## 🧪 Testing
+## Configuration
 
-### Using TRMNL Markup Editor
+The plugin exposes a small set of calendar-specific options in [custom-fields.yml](custom-fields.yml):
 
-1. Go to [editor.trmnl.com](https://editor.trmnl.com)
-2. Copy your template code (e.g., from `full.liquid`)
-3. Add sample JSON data under "Data" section
-4. Preview across device sizes using device selector
-5. Check responsive behavior
+- `calendar_feed_url`
+- `max_later_items`
+- `show_all_day_events`
+- `time_format`
+- `compact_mode`
+- `show_icons`
+- `custom_title`
 
-### Test Scenarios
+The default refresh rate in [settings.yml](settings.yml) is 1 minute to keep NOW and NEXT accurate during transitions.
 
-✅ **Happy Path**
-- Valid config with complete data
-- Data displays correctly in all layouts
-- Responsive across device sizes
+## Development Notes
 
-⚠️ **Edge Cases**
-- Empty/minimal data
-- Long text (100+ characters)
-- Special characters & unicode
-- Null/undefined values
+- Keep titles short and uppercase when possible.
+- Prefer formatted `time_label` strings from the backend over doing time math in Liquid.
+- Treat all-day events as lower priority and place them in LATER unless product requirements change.
+- Always preserve a useful empty state. If there is no current event, NOW should read `FREE`.
 
-❌ **Error States**
-- No configuration
-- Invalid configuration
-- Failed data fetch
-- Malformed data
+## Testing
 
-### Manual Checklist
+Use the sample payload in [assets/demo/sample-data.json](assets/demo/sample-data.json) with the TRMNL Markup Editor.
 
-- [ ] Test all layouts (full, half_horizontal, half_vertical, quadrant)
-- [ ] Verify on all device sizes (sm, md, lg)
-- [ ] Test with minimal data
-- [ ] Test with maximum data
-- [ ] Verify text truncation
-- [ ] Check error states
-- [ ] Test portrait mode
-- [ ] Verify bit-depth variants
-- [ ] Check accessibility
+Validate these cases:
 
-## 📚 Development Resources
+- Active current event
+- No current event, NOW shows FREE
+- No next event, NEXT shows clear fallback
+- Long titles clamp cleanly
+- 2, 3, and 4 LATER items
+- All-day events on and off
 
-### TRMNL Documentation
+## Files
+
+- [templates/shared.liquid](templates/shared.liquid) contains the reusable agenda components.
+- [templates/full.liquid](templates/full.liquid) implements the strongest Now/Next/Later hierarchy.
+- [templates/half_horizontal.liquid](templates/half_horizontal.liquid) adapts the same hierarchy to stacked halves.
+- [templates/half_vertical.liquid](templates/half_vertical.liquid) uses a left-right split with text aligned for fast scanning.
+- [templates/quadrant.liquid](templates/quadrant.liquid) adds a date/time context panel for compact dashboards.
 - [Framework Design Docs](https://trmnl.com/framework) - Complete design system reference
 - [Device Models API](https://trmnl.com/api/models) - Device specifications
 - [Plugin Guides](https://help.trmnl.com/en/collections/7820559-plugin-guides) - How-to guides

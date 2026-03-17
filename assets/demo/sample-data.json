@@ -1,10 +1,29 @@
 {
   "has_data": true,
-  "title": "Example Plugin",
-  "value": 42,
-  "status": "success",
-  "metadata": "Last updated: 2 minutes ago",
-  "detail_1": "100",
-  "detail_2": "50",
-  "detail_3": "75"
+  "current_date_label": "MON, MAR 16",
+  "current_time_label": "14:32",
+  "context_label": "3 UPCOMING",
+  "current_event": {
+    "title": "DEEP WORK",
+    "time_label": "14:00 - 16:00",
+    "is_free": false
+  },
+  "next_event": {
+    "title": "BATH",
+    "time_label": "19:45 - 20:15"
+  },
+  "later_events": [
+    {
+      "title": "PARTY",
+      "time_label": "17:00"
+    },
+    {
+      "title": "TECH TALK",
+      "time_label": "11:30"
+    },
+    {
+      "title": "DINNER",
+      "time_label": "20:30"
+    }
+  ]
 }

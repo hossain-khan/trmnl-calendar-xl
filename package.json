@@ -1,26 +1,26 @@
 {
-  "name": "trmnl-plugin-template",
+  "name": "trmnl-calendar-xl",
   "version": "1.0.0",
-  "description": "A production-ready template for creating TRMNL plugins",
+  "description": "A TRMNL agenda plugin that shows NOW, NEXT, and LATER events with large-text hierarchy.",
   "keywords": [
     "trmnl",
-    "plugin",
+    "calendar",
+    "agenda",
     "e-ink",
-    "template",
     "liquid"
   ],
-  "author": "Your Name",
+  "author": "Hossain Khan",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/your-plugin-name.git"
+    "url": "https://github.com/hossain-khan/trmnl-calendar-xl.git"
   },
-  "homepage": "https://github.com/your-username/your-plugin-name",
+  "homepage": "https://github.com/hossain-khan/trmnl-calendar-xl",
   "bugs": {
-    "url": "https://github.com/your-username/your-plugin-name/issues"
+    "url": "https://github.com/hossain-khan/trmnl-calendar-xl/issues"
   },
   "scripts": {
-    "validate": "echo 'No build step required for plugin templates'"
+    "validate": "echo 'No build step required for TRMNL Liquid templates'"
   },
   "engines": {
     "node": ">=14.0.0"
