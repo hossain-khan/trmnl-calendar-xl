@@ -1,8 +1,9 @@
 {% comment %}
   Shared components for Calendar XL.
 
-  Current TRMNL Plugin Merge namespace: google_calendar_29713.
-  Update this if the connected calendar instance changes.
+  The calendar data source is selected by the user via the `calendar_source`
+  custom field (plugin_instance_select, plugin_keyname: google_calendar).
+  Templates reference it as `calendar_source` — no hardcoded merge namespace needed.
 {% endcomment %}
 
 {% template error_state %}

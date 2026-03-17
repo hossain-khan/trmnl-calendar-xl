@@ -7,11 +7,10 @@ Calendar XL is a TRMNL agenda plugin built around a single idea: show the curren
 This repository is Merge-only.
 
 - A native TRMNL calendar plugin provides the source data.
-- Calendar XL receives that data through TRMNL Plugin Merge under a namespaced node such as `google_calendar_29713`.
+- Calendar XL receives that data through TRMNL Plugin Merge via the `calendar_source` custom field (`plugin_instance_select`, `plugin_keyname: google_calendar`).
+- The user selects their Google Calendar instance from the plugin settings dropdown — no hardcoded merge namespace in the templates.
 - The Liquid templates derive NOW, NEXT, and LATER directly from the merged `events` array.
 - There is no backend data transformer or custom JSON contract in this repository.
-
-The current templates are hard-coded to `google_calendar_29713` at the top of each layout. If the connected calendar instance changes, update that namespace in the four layout files and the note in [templates/shared.liquid](templates/shared.liquid).
 
 ## Layout Model
 
@@ -92,6 +91,7 @@ All-day events are skipped for NOW and NEXT. They can still appear in LATER when
 
 The current templates use these fields from [custom-fields.yml](custom-fields.yml):
 
+- `calendar_source` — `plugin_instance_select` field; user picks their Google Calendar plugin instance; resolves to the merged data node in templates
 - `max_later_items`
 - `show_icons`
 - `custom_title`
@@ -126,7 +126,7 @@ Validate these cases:
 
 ## Known Constraints
 
-- The merge namespace is hard-coded in each layout file.
+- The `calendar_source` field only surfaces Google Calendar instances. Users with Apple Calendar, Outlook, or ICS-based calendars would need a separate `plugin_instance_select` field targeting the appropriate `plugin_keyname`.
 - The quadrant layout always limits LATER to 2 items, independent of `max_later_items`.
 - `current_time_label` is derived from the device render time, while `current_date_label` comes from the merged calendar payload.
 

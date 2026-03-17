@@ -1,7 +1,13 @@
-- key: "max_later_items"
-  type: "select"
-  label: "Later Items"
-  required: true
+- keyname: "calendar_source"
+  field_type: "plugin_instance_select"
+  name: "Calendar Source"
+  plugin_keyname: "google_calendar"
+  description: "Select the Google Calendar plugin instance to merge events from"
+  help_text: "Only Google Calendar plugins active in a playlist are shown. Hide the native plugin in your playlist to use it here."
+
+- keyname: "max_later_items"
+  field_type: "select"
+  name: "Later Items"
   options:
     - label: "2 items"
       value: "2"
@@ -11,15 +17,15 @@
       value: "4"
   description: "Maximum number of future events shown in the LATER section"
 
-- key: "show_icons"
-  type: "checkbox"
-  label: "Show Section Icons"
-  required: false
+- keyname: "show_icons"
+  field_type: "boolean"
+  name: "Show Section Icons"
+  optional: true
   description: "Optional glyphs can be rendered alongside NOW, NEXT, and LATER"
 
-- key: "custom_title"
-  type: "text"
-  label: "Custom Plugin Title"
+- keyname: "custom_title"
+  field_type: "string"
+  name: "Custom Plugin Title"
   placeholder: "Calendar XL"
-  required: false
+  optional: true
   description: "Overrides the title bar; leave blank to use the TRMNL instance name"
