@@ -1,0 +1,65 @@
+{
+  "google_calendar_123456": {
+    "events": [
+      {
+        "summary": "Deep Work",
+        "description": "Sprint planning and implementation block",
+        "status": "confirmed",
+        "date_time": "2026-03-17T14:00:00-04:00",
+        "all_day": false,
+        "calname": "primary",
+        "start_full": "2026-03-17T14:00:00-04:00",
+        "end_full": "2026-03-17T16:00:00-04:00",
+        "start": "2:00 PM",
+        "end": "4:00 PM"
+      },
+      {
+        "summary": "Party",
+        "description": "Birthday dinner downtown",
+        "status": "confirmed",
+        "date_time": "2026-03-17T17:00:00-04:00",
+        "all_day": false,
+        "calname": "primary",
+        "start_full": "2026-03-17T17:00:00-04:00",
+        "end_full": "2026-03-17T18:30:00-04:00",
+        "start": "5:00 PM",
+        "end": "6:30 PM"
+      },
+      {
+        "summary": "Bath",
+        "description": "Reset before dinner",
+        "status": "confirmed",
+        "date_time": "2026-03-17T19:45:00-04:00",
+        "all_day": false,
+        "calname": "primary",
+        "start_full": "2026-03-17T19:45:00-04:00",
+        "end_full": "2026-03-17T20:15:00-04:00",
+        "start": "7:45 PM",
+        "end": "8:15 PM"
+      },
+      {
+        "summary": "Company Offsite",
+        "description": "All-day event that should usually be deprioritized",
+        "status": "confirmed",
+        "date_time": "2026-03-18T00:00:00-04:00",
+        "all_day": true,
+        "calname": "team-calendar@example.com",
+        "start_full": "2026-03-18",
+        "end_full": "2026-03-19",
+        "start": "2026-03-18",
+        "end": "2026-03-19"
+      }
+    ],
+    "event_layout": "schedule",
+    "include_description": false,
+    "include_event_time": true,
+    "first_day": 1,
+    "fixed_week": false,
+    "scroll_time": "08:00:00",
+    "scroll_time_end": "20:00:00",
+    "time_format": "am/pm",
+    "date_format": "%a, %b %-d",
+    "today_in_tz": "2026-03-17T00:00:00-04:00",
+    "zoom_mode": false
+  }
+}

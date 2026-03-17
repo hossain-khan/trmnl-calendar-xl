@@ -62,6 +62,18 @@ nextEvent = first event where start > now
 laterEvents = events after nextEvent, limited by maxLaterItems
 ```
 
+## TRMNL Merge Input
+
+For Plugin Merge work, TRMNL exposes native plugin JSON under a namespaced node shaped like `plugin_keyname_plugin_setting_id`. For calendar sources that means a node such as `google_calendar_123456` or `outlook_calendar_987654`.
+
+The saved snapshot in [assets/demo/trmnl-plugin-merge-snapshot.json](assets/demo/trmnl-plugin-merge-snapshot.json) reflects the practical shape recovered from TRMNL's Plugin Data API docs and the public native calendar source code:
+
+- Root node is the merge namespace, not a flat `events` array.
+- Native calendar data exposes an `events` array plus rendering settings like `event_layout`, `include_event_time`, and `time_format`.
+- Each event item includes `summary`, `description`, `status`, `date_time`, `all_day`, `calname`, `start_full`, `end_full`, `start`, and `end`.
+
+That snapshot is the best starting point for any Liquid logic that reads directly from Plugin Merge variables before a custom backend transforms the data into the simplified Now / Next / Later contract.
+
 ## Configuration
 
 The plugin exposes a small set of calendar-specific options in [custom-fields.yml](custom-fields.yml):
@@ -103,6 +115,7 @@ Validate these cases:
 - [templates/half_horizontal.liquid](templates/half_horizontal.liquid) adapts the same hierarchy to stacked halves.
 - [templates/half_vertical.liquid](templates/half_vertical.liquid) uses a left-right split with text aligned for fast scanning.
 - [templates/quadrant.liquid](templates/quadrant.liquid) adds a date/time context panel for compact dashboards.
+- [assets/demo/trmnl-plugin-merge-snapshot.json](assets/demo/trmnl-plugin-merge-snapshot.json) captures the native TRMNL calendar merge payload shape.
 - [Framework Design Docs](https://trmnl.com/framework) - Complete design system reference
 - [Device Models API](https://trmnl.com/api/models) - Device specifications
 - [Plugin Guides](https://help.trmnl.com/en/collections/7820559-plugin-guides) - How-to guides
