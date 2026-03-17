@@ -65,7 +65,7 @@
 {% if size == 'full' %}
 <div class="flex flex--col flex--center-x flex--center-y gap--medium h--full text--center">
   <div class="value value--large md:value--xlarge lg:value--xxlarge">CAL</div>
-  <div class="title title--medium md:title--large">Calendar Merge Required</div>
+  <div class="title title--medium">Calendar Merge Required</div>
   <div class="description md:title md:title--small">
     Connect a native calendar plugin, hide it in your playlist, then update this template to use the merge node from TRMNL.
   </div>
@@ -167,7 +167,7 @@
 
 {% template title_bar %}
 <div class="title_bar">
-  <span class="title md:title--large">{{ title }}</span>
+  <span class="title">{{ title }}</span>
   {% if instance and instance != blank %}
   <span class="instance">{{ instance }}</span>
   {% endif %}

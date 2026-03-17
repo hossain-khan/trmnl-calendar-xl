@@ -9,10 +9,10 @@
     {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[50cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xlarge md:value--xxxlarge lg:value--xxxlarge", detail_classes: "hidden", fit_height: 140, empty_value_classes: "value value--xlarge md:value--xxlarge lg:value--xxxlarge", empty_detail: "No events today", empty_detail_classes: "title title--small md:title--medium" %}
 
     {% if is_free and next_event != blank %}
-    {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small grow w--full", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--small", title_classes: "title title--medium md:title--large", time_classes: "label", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}
+    {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small grow w--full", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--small", title_classes: "title title--medium", time_classes: "label", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}
     {% else %}
     <div class="grid grid--cols-2 gap--medium">
-      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small", meta: current_date_label, next_event: next_event, title_classes: "title title--medium md:title--large", time_classes: "value value--small md:value--medium value--tnums", empty_detail: "No timed events after this." %}
+      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small", meta: current_date_label, next_event: next_event, title_classes: "title title--medium", time_classes: "value value--small md:value--medium value--tnums", empty_detail: "No timed events after this." %}
 
       <div class="outline rounded--large p--2 flex flex--col gap--small">
         {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}
