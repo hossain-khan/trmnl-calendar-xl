@@ -1,28 +1,100 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
   <div class="flex flex--col gap--medium h--full">
+
+    {% comment %} ============================================================
+      HERO PANEL — NOW or NEXT (inverted, top 60% of layout height)
+      Three <span data-value-fit> elements for device/orientation-appropriate heights:
+        block lg:hidden                      → sm/md (TRMNL OG),        fit_height 150
+        hidden lg:block lg:portrait:hidden   → lg landscape (TRMNL X),  fit_height 320
+        hidden lg:portrait:block             → lg portrait  (TRMNL X),  fit_height 480
+    ============================================================ {% endcomment %}
     {% if primary_event != blank %}
       {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
     {% else %}
-      {% assign hero_meta = current_time_label %}
+      {% assign hero_meta = blank %}
     {% endif %}
-    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[60cqh] text--white bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xxxlarge", fit_height: 150, fit_height_lg: 320, fit_height_lg_portrait: 480, empty_value: "FREE", empty_detail: "No events today", empty_detail_classes: "title title--small" %}
+    <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] text--white bg--black">
 
-    {% if is_free and next_event != blank %}
-    {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small grow w--full", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall lg:gap--small", title_classes: "title title--small md:title--medium lg:title--large", time_classes: "label", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY", inverted: true %}
-    {% else %}
-    <div class="grid grid--cols-2 gap--medium">
-      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small", meta: current_date_label, next_event: next_event, title_classes: "value md:portrait:value--small lg:value--large lg:portrait:value--large", time_classes: "value value--small md:value--medium lg:value", inverted: true, empty_detail: "No timed events after this." %}
+      {% render "section_label", text: primary_label, meta: hero_meta, inverted: true %}
 
-      <div class="outline rounded--large p--2 flex flex--col gap--small">
-        {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall lg:gap--small", title_classes: "title title--small md:title--medium lg:title--large", time_classes: "label label--small", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}
-      </div>
+      {% if primary_event != blank %}
+      <span class="value value--xxxlarge block lg:hidden"
+            data-value-fit="true"
+            data-value-fit-max-height="150">{{ primary_event.summary | upcase }}</span>
+      <span class="value value--xxxlarge hidden lg:block lg:portrait:hidden"
+            data-value-fit="true"
+            data-value-fit-max-height="320">{{ primary_event.summary | upcase }}</span>
+      <span class="value value--xxxlarge hidden lg:portrait:block"
+            data-value-fit="true"
+            data-value-fit-max-height="480">{{ primary_event.summary | upcase }}</span>
+      {% else %}
+      <div class="value value--xxxlarge">FREE</div>
+      <div class="title title--small">No events today</div>
+      {% endif %}
+
     </div>
-    {% endif %}
+
+    {% comment %} ============================================================
+      BOTTOM ROW — NEXT (left) + LATER (right), grows to fill remaining space
+    ============================================================ {% endcomment %}
+    <div class="grid grid--cols-2 gap--medium grow">
+
+      {% comment %} --- NEXT panel --- {% endcomment %}
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+
+        {% render "section_label", text: "NEXT", meta: current_date_label, inverted: true %}
+
+        {% if display_next_event != blank %}
+        <div class="value md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ display_next_event.summary | upcase }}</div>
+        <div class="value value--small md:value--medium lg:value">{{ display_next_event.start }} – {{ display_next_event.end }}</div>
+        {% else %}
+        <div class="title title--small">CLEAR</div>
+        <div class="description">No timed events after this.</div>
+        {% endif %}
+
+      </div>
+
+      {% comment %} --- LATER panel --- {% endcomment %}
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+
+        {% render "section_label", text: "LATER", inverted: true %}
+
+        <div class="flex flex--col gap--xsmall lg:gap--small">
+          {% assign later_count = 0 %}
+          {% for event in events %}
+            {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+            {% assign is_skip = false %}
+            {% if primary_event != blank and event.date_time == primary_event.date_time and event.summary == primary_event.summary %}
+              {% assign is_skip = true %}
+            {% endif %}
+            {% if display_next_event != blank and event.date_time == display_next_event.date_time and event.summary == display_next_event.summary %}
+              {% assign is_skip = true %}
+            {% endif %}
+            {% if start_ts > now_ts and is_skip == false and later_count < later_limit %}
+            <div class="item">
+              <div class="meta"></div>
+              <div class="content">
+                <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{{ event.summary | upcase }}</span>
+                <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %}</span>
+              </div>
+            </div>
+            {% assign later_count = later_count | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+          {% if later_count == 0 %}
+          <div class="description">Nothing else scheduled.</div>
+          {% endif %}
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
   {% else %}
   {% render "error_state", size: "full" %}
   {% endif %}
 </div>
 
-{% render "title_bar", title: plugin_title, instance: calendar.event_layout | upcase %}
+{% render "title_bar", title: plugin_title, instance: current_date_label %}

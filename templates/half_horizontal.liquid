@@ -7,10 +7,46 @@
   {% endif %}
   <div class="grid grid--cols-3 gap--small h--full">
 
-    {% render "now_panel", panel_classes: "col--span-2 rounded--large p--2 flex flex--col gap--small text--white bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xxxlarge", fit_height: 110, fit_height_lg: 230, empty_value: "FREE", empty_detail: "Nothing scheduled today", empty_detail_classes: "description" %}
+    {% comment %} ============================================================
+      LEFT COLUMN — NOW/NEXT hero (col--span-2 ≈ 67% of width)
+      Two <span data-value-fit> for TRMNL OG (fit_height 110) and TRMNL X (fit_height 230)
+    ============================================================ {% endcomment %}
+    <div class="col--span-2 rounded--large p--2 flex flex--col gap--small text--white bg--black">
 
+      {% render "section_label", text: primary_label, meta: hero_meta, inverted: true %}
+
+      {% if primary_event != blank %}
+      <span class="value value--xxxlarge block lg:hidden"
+            data-value-fit="true"
+            data-value-fit-max-height="110">{{ primary_event.summary | upcase }}</span>
+      <span class="value value--xxxlarge hidden lg:block"
+            data-value-fit="true"
+            data-value-fit-max-height="230">{{ primary_event.summary | upcase }}</span>
+      {% else %}
+      <div class="value value--xxxlarge">FREE</div>
+      <div class="description">Nothing scheduled today</div>
+      {% endif %}
+
+    </div>
+
+    {% comment %} ============================================================
+      RIGHT COLUMN — NEXT (1 of 3 cols ≈ 33% of width)
+    ============================================================ {% endcomment %}
     <div class="flex flex--col gap--small h--full">
-      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall grow", next_event: display_next_event, title_classes: "value value--xsmall md:value--small lg:value--large", time_classes: "value value--xsmall md:value--small", inverted: false, empty_detail: "Nothing next." %}
+
+      <div class="outline rounded--large p--2 flex flex--col gap--xsmall grow">
+
+        {% render "section_label", text: "NEXT", inverted: false %}
+
+        {% if display_next_event != blank %}
+        <div class="value value--xsmall md:value--small lg:value--large" data-clamp="3">{{ display_next_event.summary | upcase }}</div>
+        <div class="value value--xsmall md:value--small">{{ display_next_event.start }} – {{ display_next_event.end }}</div>
+        {% else %}
+        <div class="title title--small">CLEAR</div>
+        {% endif %}
+
+      </div>
+
     </div>
 
   </div>
@@ -19,4 +55,4 @@
   {% endif %}
 </div>
 
-{% render "title_bar", title: plugin_title, instance: "Left / Right" %}
+{% render "title_bar", title: plugin_title, instance: current_date_label %}

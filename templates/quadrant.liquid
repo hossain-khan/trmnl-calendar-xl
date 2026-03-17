@@ -5,10 +5,30 @@
   {% else %}
     {% assign hero_meta = blank %}
   {% endif %}
-  {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--full text--white bg--black", meta: hero_meta, event: primary_event, label: primary_label, value_classes: "value value--xxxlarge", fit_height: 130, fit_height_lg: 280, empty_value: "FREE" %}
+
+  {% comment %} ============================================================
+    Single full-height hero — NOW or NEXT.
+    Two <span data-value-fit> for TRMNL OG (fit_height 130) and TRMNL X (fit_height 280)
+  ============================================================ {% endcomment %}
+  <div class="rounded--large p--2 flex flex--col gap--small h--full text--white bg--black">
+
+    {% render "section_label", text: primary_label, meta: hero_meta, inverted: true %}
+
+    {% if primary_event != blank %}
+    <span class="value value--xxxlarge block lg:hidden"
+          data-value-fit="true"
+          data-value-fit-max-height="130">{{ primary_event.summary | upcase }}</span>
+    <span class="value value--xxxlarge hidden lg:block"
+          data-value-fit="true"
+          data-value-fit-max-height="280">{{ primary_event.summary | upcase }}</span>
+    {% else %}
+    <div class="value value--xxxlarge">FREE</div>
+    {% endif %}
+
+  </div>
   {% else %}
   {% render "error_state", size: "quadrant" %}
   {% endif %}
 </div>
 
-{% render "title_bar", title: plugin_title, instance: "Now" %}
+{% render "title_bar", title: plugin_title, instance: current_date_label %}
