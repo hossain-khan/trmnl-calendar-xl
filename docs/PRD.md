@@ -151,35 +151,30 @@ laterEvents = next 2–3 events after nextEvent
 
 ---
 
-# 📺 5.2 HALF HORIZONTAL (Top/Bottom Split)
+# 📺 5.2 HALF HORIZONTAL (Left/Right Split)
 
 ## Layout Structure
 
 ```
-[ NOW (top 50%) ]
-[ NEXT + LATER (bottom 50%) ]
+[ NOW/NEXT (left ~67%) | NEXT (right ~33%) ]
 ```
 
 ---
 
 ## Rendering Rules
 
-### Top (NOW)
+### Left (Hero)
 
-Same as full screen
+Same as full screen NOW block — inverted, large text, time range.
 
 ---
 
-### Bottom
-
-Split horizontally:
+### Right (NEXT)
 
 ```
-NEXT: Bath
-19:45
-
-• Party 17:00
-• Tech Talk 11:30
+NEXT
+Bath
+19:45 – 20:15
 ```
 
 ---
@@ -191,35 +186,33 @@ NEXT: Bath
 
 ---
 
-# 📱 5.3 HALF VERTICAL (Left/Right Split)
+# 📱 5.3 HALF VERTICAL (Top/Bottom Split)
 
 ## Layout Structure
 
 ```
-[ NOW | NEXT + LATER ]
+[ NOW/NEXT (top ~67%) ]
+[ NEXT     (bottom ~33%) ]
 ```
 
 ---
 
 ## Rendering Rules
 
-### Left (NOW)
+### Top (Hero)
 
 * Very large text
 * Minimal info
+* Inverted (white on black)
 
 ---
 
-### Right (Stacked)
+### Bottom (NEXT)
 
 ```
 NEXT
 Bath
-19:45
-
-LATER
-• Party 17:00
-• Tech Talk
+19:45 – 20:15
 ```
 
 ---
@@ -227,43 +220,27 @@ LATER
 ## Design Notes
 
 * Align text left for readability
-* Use divider line between sections
+* Use divider between sections
 
 ---
 
-# 🧩 5.4 QUADRANT (4 Blocks)
+# 🧩 5.4 QUADRANT (Single Hero)
 
 ## Layout Structure
 
 ```
-[ NOW   | NEXT ]
-[ LATER | CLOCK / DATE ]
+[ NOW / NEXT — full height hero ]
 ```
 
 ---
 
 ## Rendering Rules
 
-### Top Left: NOW
+### Hero (full height)
 
-* Largest text in grid
-
-### Top Right: NEXT
-
-* Slightly smaller
-
-### Bottom Left: LATER
-
-* 2 items max
-
-### Bottom Right: Context
-
-* Date OR current time
-
-```
-MON, MAR 16
-14:32
-```
+* Shows NOW when an event is active, otherwise promotes NEXT
+* Inverted treatment (white on black)
+* Largest possible text via `data-value-fit`
 
 ---
 
@@ -310,11 +287,12 @@ Current implementation exposes these options in Calendar XL:
 
 ```json
 {
-  "maxLaterItems": 3,
-  "showIcons": true,
+  "laterLimit": 3,
   "customTitle": "Calendar XL"
 }
 ```
+
+`laterLimit` is hardcoded to 3 in `templates/shared.liquid` and is not user-configurable.
 
 ---
 

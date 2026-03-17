@@ -12,23 +12,14 @@ In TRMNL, configure Calendar XL to receive the native calendar plugin through Pl
 
 The current layouts are written against a single merge namespace and do not auto-discover it.
 
-## 3. Update the Merge Namespace in the Templates
+## 3. Select the Calendar Source in Plugin Settings
 
-Replace the hard-coded namespace at the top of each layout file when your connected calendar instance uses a different setting id:
-
-- [templates/full.liquid](templates/full.liquid)
-- [templates/half_horizontal.liquid](templates/half_horizontal.liquid)
-- [templates/half_vertical.liquid](templates/half_vertical.liquid)
-- [templates/quadrant.liquid](templates/quadrant.liquid)
-
-Also update the explanatory note in [templates/shared.liquid](templates/shared.liquid).
+Open the Calendar XL plugin settings and choose your Google Calendar instance from the **Calendar Source** dropdown. The merged payload is resolved automatically — no manual namespace update is required in the template files.
 
 ## 4. Configure the Optional UI Fields
 
 The current implementation uses these plugin fields from [custom-fields.yml](custom-fields.yml):
 
-- Maximum number of LATER items
-- Optional section icons
 - Custom title override
 
 Time format and event formatting come from the merged calendar payload.
@@ -44,9 +35,9 @@ If you want to inspect the raw calendar data without the merge wrapper, use [ass
 Test each template against the PRD:
 
 - [templates/full.liquid](templates/full.liquid): NOW dominates, NEXT and LATER support.
-- [templates/half_horizontal.liquid](templates/half_horizontal.liquid): NOW on top, supporting agenda below.
-- [templates/half_vertical.liquid](templates/half_vertical.liquid): NOW left, future agenda right.
-- [templates/quadrant.liquid](templates/quadrant.liquid): compact four-block dashboard.
+- [templates/half_horizontal.liquid](templates/half_horizontal.liquid): hero on left, NEXT panel on right.
+- [templates/half_vertical.liquid](templates/half_vertical.liquid): hero on top, NEXT panel below.
+- [templates/quadrant.liquid](templates/quadrant.liquid): single full-height NOW/NEXT hero.
 
 ## 7. Check Edge Cases
 
@@ -57,7 +48,6 @@ Validate these cases before publishing:
 - Long titles clamp without breaking layout
 - All-day events stay out of NOW and NEXT
 - Back-to-back meetings switch NOW and NEXT cleanly at minute boundaries
-- Different `max_later_items` values behave as expected outside the quadrant layout
 
 ## 8. Refresh Expectations
 

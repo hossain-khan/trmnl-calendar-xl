@@ -29,7 +29,7 @@ Open an issue with:
 
 ## Merge-Specific Rules
 
-- If the merge namespace changes, update all four layout files together.
+- The merge namespace is resolved automatically via the `calendar_source` custom field — no per-file namespace update is needed when the calendar instance changes.
 - Test with a namespaced payload such as [assets/demo/trmnl-plugin-merge-snapshot.json](assets/demo/trmnl-plugin-merge-snapshot.json), not with a flat event list.
 - Verify NOW and NEXT still ignore all-day events unless the product decision changes.
 
@@ -40,7 +40,6 @@ Before opening a pull request, validate:
 - Full, half horizontal, half vertical, and quadrant layouts
 - Empty and fallback states
 - Long event titles
-- Different `max_later_items` values
 - Different device sizes in the TRMNL Markup Editor
 
 ## Documentation Expectations
