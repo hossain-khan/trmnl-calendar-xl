@@ -6,7 +6,7 @@
     {% else %}
       {% assign hero_meta = current_time_label %}
     {% endif %}
-    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[50cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: hero_meta, icon: now_icon, event: primary_event, label: primary_label, value_classes: "value value--xlarge md:value--xxxlarge lg:value--xxxlarge", detail_classes: "hidden", fit_height: 160, empty_value_classes: "value value--xlarge md:value--xxlarge lg:value--xxxlarge", empty_detail: "No events today", empty_detail_classes: "title title--small md:title--medium" %}
+    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[50cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: hero_meta, icon: now_icon, event: primary_event, label: primary_label, value_classes: "value value--xlarge md:value--xxxlarge lg:value--xxxlarge", detail_classes: "hidden", fit_height: 140, empty_value_classes: "value value--xlarge md:value--xxlarge lg:value--xxxlarge", empty_detail: "No events today", empty_detail_classes: "title title--small md:title--medium" %}
 
     {% if is_free and next_event != blank %}
     {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small grow w--full", icon: later_icon, events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--small", title_classes: "title title--medium md:title--large", time_classes: "label", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}

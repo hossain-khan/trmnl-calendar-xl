@@ -108,7 +108,7 @@
 <div class="{{ panel_classes }}">
   {% render "section_label", text: label | default: "NOW", meta: meta, inverted: true, icon: icon %}
   {% if event != blank %}
-  <div class="{{ value_classes }}" data-value-fit="true" data-value-fit-max-height="{{ fit_height }}">{{ event.summary | upcase }}</div>
+  <span class="{{ value_classes }}" data-value-fit="true" data-value-fit-max-height="{{ fit_height }}">{{ event.summary | upcase }}</span>
   <div class="{{ detail_classes }}">{{ event.start }} - {{ event.end }}</div>
   {% else %}
   <div class="{{ empty_value_classes | default: value_classes }}">{{ empty_value | default: 'FREE' }}</div>
