@@ -8,14 +8,13 @@
 - keyname: "max_later_items"
   field_type: "select"
   name: "Later Items"
+  optional: true
+  default: 3
   options:
-    - label: "2 items"
-      value: "2"
-    - label: "3 items"
-      value: "3"
-    - label: "4 items"
-      value: "4"
-  description: "Maximum number of future events shown in the LATER section"
+    - "2 items": 2
+    - "3 items": 3
+    - "4 items": 4
+  description: "Maximum number of future events shown in the LATER section (full layout only)"
 
 - keyname: "custom_title"
   field_type: "string"
