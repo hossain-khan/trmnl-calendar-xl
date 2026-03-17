@@ -1,63 +1,97 @@
-{% comment %}
-  ============================================================================
-  QUADRANT.LIQUID - Quarter-size Layout Template
-  ============================================================================
-  Use this template for minimal, compact displays on quarter-size screens.
-  
-  Best For:
-  - Simple, single-value displays
-  - Compact widgets in dashboard
-  - Minimal information cards
-  - Icon + label combinations
-  
-  Device Sizes: Works across all devices (sm, md, lg)
-  Padding: p--1 (minimal - every pixel counts!)
-  Responsive: Simplifies further for very small screens
-  
-  Structure:
-  - Single centered content
-  - Minimal title bar
-  - Absolute space efficiency
-  ============================================================================
-{% endcomment %}
+{% assign calendar = google_calendar_123456 %}
+{% assign events = calendar.events %}
+{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
 
 <div class="layout">
-  {% comment %} Check if data is available {% endcomment %}
-  {% if has_data %}
-  
-  {% comment %} 
-    Everything centered and minimal
-    Uses inline-flex for mixed content display
-    See Advanced Layout Patterns section for device-specific optimization
-  {% endcomment %}
-  <div class="flex flex--col flex--center-x flex--center-y h--full gap--xsmall">
-    
-    {% comment %} 
-      Primary value with tabular numbers for alignment
-      data-value-fit auto-scales headline to fit available space
-    {% endcomment %}
-    <div class="value value--large md:value--xlarge value--tnums" data-value-fit="true" data-value-fit-max-height="140">
-      {{ primary_value | default: "42" }}
-    </div>
-    
-    {% comment %} Compact title - uses data-clamp for safety {% endcomment %}
-    <div class="title title--small md:title--medium text--center" data-clamp="1">
-      {{ metric_name | default: "Quick Stats" }}
-    </div>
-  </div>
+  {% if calendar != blank and events != blank %}
+  {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
+  {% assign show_icons = trmnl.plugin_settings.custom_fields_values.show_icons == 'true' %}
+  {% assign now_icon = '' %}
+  {% assign next_icon = '' %}
+  {% assign later_icon = '' %}
+  {% if show_icons %}
+    {% assign now_icon = '●' %}
+    {% assign next_icon = '→' %}
+    {% assign later_icon = '+' %}
+  {% endif %}
+  {% assign time_pattern = '%-I:%M %p' %}
+  {% unless calendar.time_format == 'am/pm' %}
+    {% assign time_pattern = '%H:%M' %}
+  {% endunless %}
+  {% assign current_date_label = calendar.today_in_tz | date: calendar.date_format | upcase %}
+  {% assign current_time_label = 'now' | date: time_pattern %}
+  {% assign current_event = blank %}
+  {% assign next_event = blank %}
+  {% assign upcoming_count = 0 %}
 
-  {% else %}
-  
-  {% comment %} Display error state when plugin is unconfigured {% endcomment %}
-  <div class="flex flex--col flex--center-x flex--center-y gap--xsmall h--full">
-    <div class="value value--small md:value--medium">⚙️</div>
-    <div class="description text--center">Setup needed</div>
+  {% for event in events %}
+    {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+    {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
+    {% if start_ts > now_ts %}
+      {% assign upcoming_count = upcoming_count | plus: 1 %}
+    {% endif %}
+    {% unless event.all_day %}
+      {% if current_event == blank and start_ts <= now_ts and end_ts > now_ts %}
+        {% assign current_event = event %}
+      {% endif %}
+      {% if next_event == blank and start_ts > now_ts %}
+        {% assign next_event = event %}
+      {% endif %}
+    {% endunless %}
+  {% endfor %}
+
+  <div class="grid grid--cols-2 gap--small h--full">
+    <div class="rounded p--1 flex flex--col gap--xsmall 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="color: white;">
+      {% render "shared", template_name: "section_label", text: "NOW", inverted: true, icon: now_icon %}
+      {% if current_event != blank %}
+      <div class="value value--small md:value--medium" data-value-fit="true" data-value-fit-max-height="88">{{ current_event.summary | upcase }}</div>
+      <div class="label label--small label--inverted">{{ current_event.start }}</div>
+      {% else %}
+      <div class="value value--small md:value--medium">FREE</div>
+      {% endif %}
+    </div>
+
+    <div class="outline rounded p--1 flex flex--col gap--xsmall">
+      {% render "shared", template_name: "section_label", text: "NEXT", inverted: false, icon: next_icon %}
+      {% if next_event != blank %}
+      <div class="title title--small" data-clamp="2">{{ next_event.summary | upcase }}</div>
+      <div class="label label--small">{{ next_event.start }}</div>
+      {% else %}
+      <div class="title title--small">CLEAR</div>
+      {% endif %}
+    </div>
+
+    <div class="outline rounded p--1 flex flex--col gap--xsmall">
+      {% render "shared", template_name: "section_label", text: "LATER", meta: upcoming_count, inverted: false, icon: later_icon %}
+      {% assign later_count = 0 %}
+      {% for event in events %}
+        {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+        {% assign is_next_match = false %}
+        {% if next_event != blank and event.date_time == next_event.date_time and event.summary == next_event.summary %}
+          {% assign is_next_match = true %}
+        {% endif %}
+        {% if start_ts > now_ts and is_next_match == false and later_count < 2 %}
+        <div class="flex flex--row flex--between gap--xsmall">
+          <span class="title title--small" data-clamp="1">{{ event.summary | upcase }}</span>
+          <span class="label label--small">{% if event.all_day %}DAY{% else %}{{ event.start }}{% endif %}</span>
+        </div>
+        {% assign later_count = later_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+      {% if later_count == 0 %}
+      <div class="description">Quiet</div>
+      {% endif %}
+    </div>
+
+    <div class="outline rounded p--1 flex flex--col flex--between">
+      <div class="label label--small label--underline">CONTEXT</div>
+      <div class="value value--small md:value--medium value--tnums">{{ current_time_label }}</div>
+      <div class="title title--small">{{ current_date_label }}</div>
+    </div>
   </div>
-  
+  {% else %}
+  {% render "shared", template_name: "error_state", size: "quadrant" %}
   {% endif %}
 </div>
 
-{% comment %} Minimal title bar for quadrant {% endcomment %}
-<div class="title_bar">
-  <span class="title title--small">Plugin</span>
-</div>
+{% render "shared", template_name: "title_bar", title: plugin_title, instance: "2 x 2" %}

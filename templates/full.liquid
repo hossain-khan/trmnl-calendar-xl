@@ -1,89 +1,106 @@
-{% comment %}
-  ============================================================================
-  FULL.LIQUID - Full-screen Layout Template
-  ============================================================================
-  Use this template for displaying content across the entire TRMNL screen.
-  
-  Best For:
-  - Detailed information displays
-  - Main data presentation
-  - Full-screen widgets
-  
-  Device Sizes: Works across all devices (sm, md, lg)
-  Padding: p--2 (standard)
-  
-  Structure:
-  - Main content area with flex: 1 for vertical centering
-  - Title bar at bottom for branding
-  - Error state fallback for unconfigured plugins
-  ============================================================================
-{% endcomment %}
+{% assign calendar = google_calendar_123456 %}
+{% assign events = calendar.events %}
+{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
 
 <div class="layout">
-  {% comment %} Check if data is available {% endcomment %}
-  {% if has_data %}
-  
+  {% if calendar != blank and events != blank %}
+  {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
+  {% assign later_limit = trmnl.plugin_settings.custom_fields_values.max_later_items | default: '3' | plus: 0 %}
+  {% assign show_icons = trmnl.plugin_settings.custom_fields_values.show_icons == 'true' %}
+  {% assign now_icon = '' %}
+  {% assign next_icon = '' %}
+  {% assign later_icon = '' %}
+  {% if show_icons %}
+    {% assign now_icon = '●' %}
+    {% assign next_icon = '→' %}
+    {% assign later_icon = '+' %}
+  {% endif %}
+  {% assign time_pattern = '%-I:%M %p' %}
+  {% unless calendar.time_format == 'am/pm' %}
+    {% assign time_pattern = '%H:%M' %}
+  {% endunless %}
+  {% assign current_date_label = calendar.today_in_tz | date: calendar.date_format | upcase %}
+  {% assign current_time_label = 'now' | date: time_pattern %}
+  {% assign current_event = blank %}
+  {% assign next_event = blank %}
+  {% assign upcoming_count = 0 %}
+
+  {% for event in events %}
+    {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+    {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
+    {% if start_ts > now_ts %}
+      {% assign upcoming_count = upcoming_count | plus: 1 %}
+    {% endif %}
+    {% unless event.all_day %}
+      {% if current_event == blank and start_ts <= now_ts and end_ts > now_ts %}
+        {% assign current_event = event %}
+      {% endif %}
+      {% if next_event == blank and start_ts > now_ts %}
+        {% assign next_event = event %}
+      {% endif %}
+    {% endunless %}
+  {% endfor %}
+
   <div class="flex flex--col gap--medium h--full">
-    {% comment %} Main content area - centered vertically {% endcomment %}
-    <div class="flex flex--center-x flex--center-y" style="flex: 1;">
-      <div class="text--center">
-        {% comment %} 
-          Example: Display your primary data here
-          Replace with actual data from your data source
-          
-          Tip: Use data-value-fit for long headlines that need to scale
-          Tip: Use value--tnums for precise numeric alignment
-        {% endcomment %}
-        <div class="value value--large md:value--xxlarge lg:value--xxxlarge" data-value-fit="true" data-value-fit-max-height="220">
-          42
-        </div>
-        <div class="title title--small md:title--medium lg:title--large">
-          Example Value
-        </div>
-        <div class="description md:label" data-clamp="2">
-          This is a template example with better best practices
-        </div>
+    <div class="rounded--large p--2 flex flex--col gap--small 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="flex: 2; color: white;">
+      {% render "shared", template_name: "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
+      {% if current_event != blank %}
+      <div class="value value--large md:value--xxlarge lg:value--xxxlarge" data-value-fit="true" data-value-fit-max-height="250">
+        {{ current_event.summary | upcase }}
       </div>
+      <div class="title title--small md:title--medium lg:title--large">{{ current_event.start }} - {{ current_event.end }}</div>
+      {% else %}
+      <div class="value value--xlarge md:value--xxlarge lg:value--xxxlarge">FREE</div>
+      <div class="title title--small md:title--medium">No current event</div>
+      {% endif %}
     </div>
 
-    {% comment %} Visual separator using modern divider component {% endcomment %}
-    <div class="divider"></div>
-
-    {% comment %} Optional secondary content area with improved styling {% endcomment %}
-    <div class="grid grid--cols-2 gap--medium md:gap--large">
-      <div class="item">
-        <div class="meta"></div>
-        <div class="content text--center">
-          <div class="value value--medium md:value--large">📊</div>
-          <div class="label">Stat 1</div>
-        </div>
+    <div class="grid grid--cols-2 gap--medium" style="flex: 1;">
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+        {% render "shared", template_name: "section_label", text: "NEXT", meta: current_date_label, inverted: false, icon: next_icon %}
+        {% if next_event != blank %}
+        <div class="title title--medium md:title--large" data-clamp="2">{{ next_event.summary | upcase }}</div>
+        <div class="value value--small md:value--medium value--tnums">{{ next_event.start }} - {{ next_event.end }}</div>
+        {% else %}
+        <div class="title title--medium md:title--large">CLEAR</div>
+        <div class="description">No timed events after this.</div>
+        {% endif %}
       </div>
-      <div class="item">
-        <div class="meta"></div>
-        <div class="content text--center">
-          <div class="value value--medium md:value--large">📈</div>
-          <div class="label">Stat 2</div>
+
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+        {% capture later_meta %}{{ upcoming_count }} UPCOMING{% endcapture %}
+        {% render "shared", template_name: "section_label", text: "LATER", meta: later_meta, inverted: false, icon: later_icon %}
+        <div class="flex flex--col gap--xsmall" style="flex: 1;">
+          {% assign later_count = 0 %}
+          {% for event in events %}
+            {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+            {% assign is_next_match = false %}
+            {% if next_event != blank and event.date_time == next_event.date_time and event.summary == next_event.summary %}
+              {% assign is_next_match = true %}
+            {% endif %}
+            {% if start_ts > now_ts and is_next_match == false and later_count < later_limit %}
+            <div class="item">
+              <div class="meta">
+                <span class="index">•</span>
+              </div>
+              <div class="content">
+                <span class="title title--small" data-clamp="1">{{ event.summary | upcase }}</span>
+                <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %}</span>
+              </div>
+            </div>
+            {% assign later_count = later_count | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+          {% if later_count == 0 %}
+          <div class="description">Nothing else scheduled.</div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-
   {% else %}
-  
-  {% comment %} Display error state when plugin is unconfigured {% endcomment %}
-  <div class="flex flex--col flex--center-x flex--center-y gap--medium h--full">
-    <div class="value value--large md:value--xlarge text--center">⚙️</div>
-    <div class="title title--medium md:title--large text--center">Setup Required</div>
-    <div class="description md:title md:title--small text--center">
-      Please configure this plugin with your API key and settings to begin.
-    </div>
-  </div>
-  
+  {% render "shared", template_name: "error_state", size: "full" %}
   {% endif %}
 </div>
 
-{% comment %} Title bar at bottom {% endcomment %}
-<div class="title_bar">
-  <span class="title md:title--large">Example Plugin</span>
-  <span class="instance">Full Layout</span>
-</div>
+{% render "shared", template_name: "title_bar", title: plugin_title, instance: calendar.event_layout | upcase %}

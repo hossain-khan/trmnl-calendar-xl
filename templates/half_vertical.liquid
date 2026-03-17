@@ -1,89 +1,93 @@
-{% comment %}
-  ============================================================================
-  HALF_VERTICAL.LIQUID - Half-size Vertical Layout Template
-  ============================================================================
-  Use this template for top-bottom stacked content on half-height displays.
-  
-  Best For:
-  - Stacked layouts (primary + secondary content)
-  - Top/bottom split displays
-  - Compact vertical layouts
-  
-  Device Sizes: Works across all devices (sm, md, lg)
-  Padding: p--2 (standard)
-  
-  Structure:
-  - Primary content fills available space (flex: 1)
-  - Secondary content at bottom
-  - Minimal gap to maximize space
-  ============================================================================
-{% endcomment %}
+{% assign calendar = google_calendar_123456 %}
+{% assign events = calendar.events %}
+{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
 
 <div class="layout">
-  {% comment %} Check if data is available {% endcomment %}
-  {% if has_data %}
-  
-  <div class="flex flex--col gap--small h--full">
-    
-    {% comment %}
-      Primary content area - fills available space
-      Uses richtext pattern for complex, formatted content
-      See Advanced Layout Patterns section in copilot-instructions
-    {% endcomment %}
-    <div class="flex flex--center-x flex--center-y" style="flex: 1;">
-      <div class="richtext richtext--center gap--small">
-        <div class="content content--center gap--xsmall text--center">
-          <div class="value value--xxlarge md:value--xxxlarge" data-clamp="1">
-            📊
-          </div>
-          <div class="title title--medium md:title--large">
-            Current Status
-          </div>
-          <div class="description md:title md:title--small" data-clamp="2">
-            {{ status_description | default: "Everything is configured correctly" }}
-          </div>
+  {% if calendar != blank and events != blank %}
+  {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
+  {% assign later_limit = trmnl.plugin_settings.custom_fields_values.max_later_items | default: '3' | plus: 0 %}
+  {% assign show_icons = trmnl.plugin_settings.custom_fields_values.show_icons == 'true' %}
+  {% assign now_icon = '' %}
+  {% assign next_icon = '' %}
+  {% assign later_icon = '' %}
+  {% if show_icons %}
+    {% assign now_icon = '●' %}
+    {% assign next_icon = '→' %}
+    {% assign later_icon = '+' %}
+  {% endif %}
+  {% assign time_pattern = '%-I:%M %p' %}
+  {% unless calendar.time_format == 'am/pm' %}
+    {% assign time_pattern = '%H:%M' %}
+  {% endunless %}
+  {% assign current_time_label = 'now' | date: time_pattern %}
+  {% assign current_event = blank %}
+  {% assign next_event = blank %}
+
+  {% for event in events %}
+    {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+    {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
+    {% unless event.all_day %}
+      {% if current_event == blank and start_ts <= now_ts and end_ts > now_ts %}
+        {% assign current_event = event %}
+      {% endif %}
+      {% if next_event == blank and start_ts > now_ts %}
+        {% assign next_event = event %}
+      {% endif %}
+    {% endunless %}
+  {% endfor %}
+
+  <div class="flex flex--row portrait:flex--col gap--medium h--full">
+    <div class="rounded--large p--2 flex flex--col gap--small flex--center-y 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="flex: 1.2; color: white;">
+      {% render "shared", template_name: "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
+      {% if current_event != blank %}
+      <div class="value value--large md:value--xlarge" data-value-fit="true" data-value-fit-max-height="160">{{ current_event.summary | upcase }}</div>
+      <div class="title title--small md:title--medium">{{ current_event.start }} - {{ current_event.end }}</div>
+      {% else %}
+      <div class="value value--large md:value--xlarge">FREE</div>
+      <div class="description">No current event</div>
+      {% endif %}
+    </div>
+
+    <div class="flex flex--col gap--medium" style="flex: 1;">
+      <div class="outline rounded--large p--2 flex flex--col gap--xsmall" style="flex: 1;">
+        {% render "shared", template_name: "section_label", text: "NEXT", inverted: false, icon: next_icon %}
+        {% if next_event != blank %}
+        <div class="title title--small md:title--medium" data-clamp="2">{{ next_event.summary | upcase }}</div>
+        <div class="value value--xsmall md:value--small value--tnums">{{ next_event.start }} - {{ next_event.end }}</div>
+        {% else %}
+        <div class="title title--small md:title--medium">CLEAR</div>
+        <div class="description">Nothing urgent next.</div>
+        {% endif %}
+      </div>
+
+      <div class="outline rounded--large p--2 flex flex--col gap--xsmall" style="flex: 1;">
+        {% render "shared", template_name: "section_label", text: "LATER", inverted: false, icon: later_icon %}
+        <div class="flex flex--col gap--xsmall text--left">
+          {% assign later_count = 0 %}
+          {% for event in events %}
+            {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+            {% assign is_next_match = false %}
+            {% if next_event != blank and event.date_time == next_event.date_time and event.summary == next_event.summary %}
+              {% assign is_next_match = true %}
+            {% endif %}
+            {% if start_ts > now_ts and is_next_match == false and later_count < later_limit %}
+            <div class="flex flex--row flex--between gap--small">
+              <span class="title title--small" data-clamp="1">{{ event.summary | upcase }}</span>
+              <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %}</span>
+            </div>
+            {% assign later_count = later_count | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+          {% if later_count == 0 %}
+          <div class="description">Nothing later.</div>
+          {% endif %}
         </div>
       </div>
     </div>
-
-    {% comment %} Modern divider separating top and bottom content {% endcomment %}
-    <div class="divider"></div>
-
-    {% comment %}
-      Secondary content area - at bottom
-      Grid layout provides better metric alignment
-      Uses value--tnums for tabular number display
-    {% endcomment %}
-    <div class="grid grid--cols-3 gap--xsmall text--center">
-      <div>
-        <div class="label label--small">Last</div>
-        <div class="value value--xsmall value--tnums">{{ last_value | default: "—" }}</div>
-      </div>
-      <div>
-        <div class="label label--small">Average</div>
-        <div class="value value--xsmall value--tnums">{{ average_value | default: "—" }}</div>
-      </div>
-      <div>
-        <div class="label label--small">Best</div>
-        <div class="value value--xsmall value--tnums">{{ best_value | default: "—" }}</div>
-      </div>
-    </div>
   </div>
-
   {% else %}
-  
-  {% comment %} Display error state when plugin is unconfigured {% endcomment %}
-  <div class="flex flex--col flex--center-x flex--center-y gap--small h--full">
-    <div class="value value--medium md:value--large">⚙️</div>
-    <div class="title title--small md:title--medium text--center">Setup Required</div>
-    <div class="description text--center">Configure plugin to begin.</div>
-  </div>
-  
+  {% render "shared", template_name: "error_state", size: "half" %}
   {% endif %}
 </div>
 
-{% comment %} Title bar at bottom {% endcomment %}
-<div class="title_bar">
-  <span class="title md:title--medium">Example Plugin</span>
-  <span class="instance">Half Vertical</span>
-</div>
+{% render "shared", template_name: "title_bar", title: plugin_title, instance: "Left / Right" %}
