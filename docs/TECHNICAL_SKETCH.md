@@ -4,9 +4,9 @@ This document describes the current implementation in this repository.
 
 ## Current Data Source
 
-Calendar XL renders from TRMNL Plugin Merge data produced by a native calendar plugin. The merged payload is exposed under a namespaced root such as `google_calendar_29713`.
+Calendar XL renders from TRMNL Plugin Merge data produced by a native calendar plugin. The user selects their Google Calendar instance via the `calendar_source` custom field (`plugin_instance_select`). Templates reference it as `calendar_source` — no hardcoded merge namespace is needed.
 
-The layouts currently hard-code that namespace at the top of each file:
+The shared setup lives in [templates/shared.liquid](../templates/shared.liquid) and is included by all layout files:
 
 - [templates/full.liquid](../templates/full.liquid)
 - [templates/half_horizontal.liquid](../templates/half_horizontal.liquid)
@@ -37,8 +37,6 @@ From the merged calendar node:
 
 From plugin custom fields:
 
-- `max_later_items`
-- `show_icons`
 - `custom_title`
 
 ## Derivation Logic
@@ -70,24 +68,25 @@ The shared rendering primitives live in [templates/shared.liquid](../templates/s
 
 ### Half Horizontal
 
-- NOW occupies the top half.
-- NEXT and LATER share the lower grid.
+- Hero (NOW or NEXT) occupies the left two-thirds (`col--span-2` of a 3-column grid).
+- NEXT panel is on the right third.
 
 ### Half Vertical
 
-- NOW occupies the left column.
-- NEXT and LATER stack on the right.
+- Hero (NOW or NEXT) occupies the top two-thirds (`h--[67cqh]`).
+- NEXT panel fills the remaining space below.
 
 ### Quadrant
 
-- LATER is fixed to 2 items.
-- CONTEXT shows current time and current date.
+- Single full-height hero shows NOW or NEXT — whichever is most immediately relevant.
+- No LATER or context block is shown.
 
 ## Known Constraints
 
-- The merge namespace is duplicated across all four layout files.
-- `max_later_items` does not affect the quadrant layout.
-- `show_icons` is optional presentation only.
+- The merge namespace is resolved automatically from the `calendar_source` custom field; no per-file update is required when the calendar instance changes.
+- The LATER limit is hardcoded to 3 items in `shared.liquid` (`later_limit = 3`).
+- The quadrant layout shows only the primary hero — no LATER or context block.
+- `custom_title` is optional presentation only.
 - The repo does not contain a backend, API adapter, or pre-derivation step.
 
 ## Testing Guidance

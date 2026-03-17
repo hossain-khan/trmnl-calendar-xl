@@ -22,17 +22,17 @@ This repository is Merge-only.
 
 ### Half Horizontal
 
-- NOW fills the top half.
-- The bottom half splits into NEXT and LATER.
+- NOW/NEXT hero occupies the left two-thirds.
+- NEXT (or secondary next) panel is on the right third.
 
 ### Half Vertical
 
-- NOW is isolated on the left.
-- NEXT and LATER stack on the right for quick left-to-right scanning.
+- NOW/NEXT hero occupies the top two-thirds.
+- NEXT (or secondary next) panel fills the remaining space below.
 
 ### Quadrant
 
-- NOW, NEXT, LATER, and context each get one block.
+- A single full-height hero shows NOW or NEXT — whichever is most immediately relevant.
 
 ## Merge Data Shape
 
@@ -92,8 +92,6 @@ All-day events are skipped for NOW and NEXT. They can still appear in LATER when
 The current templates use these fields from [custom-fields.yml](custom-fields.yml):
 
 - `calendar_source` — `plugin_instance_select` field; user picks their Google Calendar plugin instance; resolves to the merged data node in templates
-- `max_later_items`
-- `show_icons`
 - `custom_title`
 
 Everything else about event formatting comes from the merged native calendar payload, not from a separate backend contract.
@@ -118,16 +116,17 @@ Validate these cases:
 
 - [templates/shared.liquid](templates/shared.liquid) contains the reusable agenda components and merge note.
 - [templates/full.liquid](templates/full.liquid) implements the strongest Now/Next/Later hierarchy.
-- [templates/half_horizontal.liquid](templates/half_horizontal.liquid) adapts the same hierarchy to stacked halves.
-- [templates/half_vertical.liquid](templates/half_vertical.liquid) uses a left-right split with text aligned for fast scanning.
-- [templates/quadrant.liquid](templates/quadrant.liquid) adds a date and time context block for compact dashboards.
+- [templates/half_horizontal.liquid](templates/half_horizontal.liquid) uses a left/right split: hero on the left, NEXT on the right.
+- [templates/half_vertical.liquid](templates/half_vertical.liquid) uses a top/bottom split: hero on top, NEXT below.
+- [templates/quadrant.liquid](templates/quadrant.liquid) shows a single full-height hero for the most compact dashboards.
 - [docs/PRD.md](docs/PRD.md) captures the product intent.
 - [docs/TECHNICAL_SKETCH.md](docs/TECHNICAL_SKETCH.md) captures the current Merge-based implementation.
 
 ## Known Constraints
 
 - The `calendar_source` field only surfaces Google Calendar instances. Users with Apple Calendar, Outlook, or ICS-based calendars would need a separate `plugin_instance_select` field targeting the appropriate `plugin_keyname`.
-- The quadrant layout always limits LATER to 2 items, independent of `max_later_items`.
+- The LATER section is hardcoded to a maximum of 3 items in all layouts that show it.
+- The quadrant layout shows only the primary hero (NOW or NEXT) without LATER or a context block.
 - `current_time_label` is derived from the device render time, while `current_date_label` comes from the merged calendar payload.
 
 ## Resources
