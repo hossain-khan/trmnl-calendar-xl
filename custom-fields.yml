@@ -17,12 +17,6 @@
       value: "4"
   description: "Maximum number of future events shown in the LATER section"
 
-- keyname: "show_icons"
-  field_type: "boolean"
-  name: "Show Section Icons"
-  optional: true
-  description: "Optional glyphs can be rendered alongside NOW, NEXT, and LATER"
-
 - keyname: "custom_title"
   field_type: "string"
   name: "Custom Plugin Title"

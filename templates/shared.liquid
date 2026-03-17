@@ -12,15 +12,6 @@
 {% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
 {% assign later_limit = trmnl.plugin_settings.custom_fields_values.max_later_items | default: '3' | plus: 0 %}
-{% assign show_icons = trmnl.plugin_settings.custom_fields_values.show_icons == 'true' %}
-{% assign now_icon = '' %}
-{% assign next_icon = '' %}
-{% assign later_icon = '' %}
-{% if show_icons %}
-  {% assign now_icon = '●' %}
-  {% assign next_icon = '→' %}
-  {% assign later_icon = '+' %}
-{% endif %}
 {% assign time_pattern = '%-I:%M %p' %}
 {% unless calendar.time_format == 'am/pm' %}
   {% assign time_pattern = '%H:%M' %}
@@ -96,7 +87,7 @@
 {% template section_label %}
 <div class="flex flex--row flex--between flex--center-y gap--xsmall">
   <span class="label {% if inverted %}label--small label--inverted{% else %}label label--small label--underline{% endif %}">
-    {% if icon and icon != blank %}{{ icon }} {% endif %}{{ text }}
+    {{ text }}
   </span>
   {% if meta and meta != blank %}
   <span class="label label--small {% if inverted %}label--inverted{% endif %}">{{ meta }}</span>
@@ -148,14 +139,9 @@
     {% endif %}
     {% if start_ts > now_ts and is_next_match == false and later_count < later_limit %}
       {% if item_style == 'stacked' %}
-      <div class="item">
-        <div class="meta">
-          <span class="index">•</span>
-        </div>
-        <div class="content">
-          <span class="{{ title_classes }}" data-clamp="1">{{ event.summary | upcase }}</span>
-          <span class="{{ time_classes }}">{% if event.all_day %}{{ all_day_label | default: 'ALL DAY' }}{% else %}{{ event.start }}{% endif %}</span>
-        </div>
+      <div class="flex flex--col gap--xsmall">
+        <span class="{{ title_classes }}" data-clamp="1">{{ event.summary | upcase }}</span>
+        <span class="{{ time_classes }}">{% if event.all_day %}{{ all_day_label | default: 'ALL DAY' }}{% else %}{{ event.start }}{% endif %}</span>
       </div>
       {% else %}
       <div class="{{ row_classes }}">
