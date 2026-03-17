@@ -1,0 +1,95 @@
+{% comment %}
+  DEMO: half_horizontal — active NOW event state.
+  Two-column layout: LEFT hero (NOW, ~67% / col--span-2 of 3) | RIGHT stack (NEXT + LATER, ~33%)
+  All HTML inlined (no render calls). Static data for responsive testing.
+
+  Devices tested:
+    TRMNL OG  (md, 800×240 effective) → hero height ~140px → fit_height 110
+    TRMNL X   (lg, 1040×390 effective) → hero height ~290px → fit_height 230
+
+  Two-span strategy for responsive hero title:
+    block lg:hidden  → visible on sm/md (TRMNL OG), hidden on lg+
+    hidden lg:block  → hidden on sm/md, visible on lg+ (TRMNL X)
+{% endcomment %}
+
+<div class="layout">
+  <div class="grid grid--cols-3 gap--small h--full">
+
+    {% comment %} ============================================================
+      LEFT COLUMN — NOW hero (col--span-2 ≈ 67% of width)
+    ============================================================ {% endcomment %}
+    <div class="col--span-2 rounded--large p--2 flex flex--col gap--small text--white bg--black">
+
+      {% comment %} Label row: section tag left, event time right {% endcomment %}
+      <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+        <span class="label label--small label--inverted">NOW</span>
+        <span class="label label--small label--inverted">2:15 PM – 3:15 PM</span>
+      </div>
+
+      {% comment %} Hero title — sm/md (TRMNL OG half_horizontal ≈ 240px tall) {% endcomment %}
+      <span class="value value--xxxlarge block lg:hidden"
+            data-value-fit="true"
+            data-value-fit-max-height="110">MEET SAMANTHA AND EMILY AT DMS</span>
+
+      {% comment %} Hero title — lg (TRMNL X half_horizontal ≈ 390px tall) {% endcomment %}
+      <span class="value value--xxxlarge hidden lg:block"
+            data-value-fit="true"
+            data-value-fit-max-height="230">MEET SAMANTHA AND EMILY AT THE SCHOOL AND THEN MEET UP LATER</span>
+
+    </div>
+
+    {% comment %} ============================================================
+      RIGHT COLUMN — NEXT + LATER stacked (1 of 3 cols ≈ 33% of width)
+    ============================================================ {% endcomment %}
+    <div class="flex flex--col gap--small h--full">
+
+      {% comment %} --- NEXT panel (grows to take half of column height) --- {% endcomment %}
+      <div class="outline rounded--large p--2 flex flex--col gap--xsmall grow">
+
+        {% comment %} Section label {% endcomment %}
+        <span class="label label--small label--underline">NEXT</span>
+
+        {% comment %} Event title — scales up on TRMNL X {% endcomment %}
+        <div class="title title--small md:title--medium" data-clamp="3">HOSSAIN BADMINTON 🏸</div>
+
+        {% comment %} Event time {% endcomment %}
+        <div class="value value--xsmall md:value--small value--tnums">8:00 PM – 9:30 PM</div>
+
+      </div>
+
+      {% comment %} --- LATER panel (grows to take half of column height) --- {% endcomment %}
+      <div class="outline rounded--large p--2 flex flex--col gap--xsmall grow">
+
+        {% comment %} Section label {% endcomment %}
+        <span class="label label--small label--underline">LATER</span>
+
+        {% comment %} Later items list — compact for narrow column {% endcomment %}
+        <div class="flex flex--col gap--xsmall">
+
+          <div>
+            <div class="title title--small" data-clamp="1">GO TO BRAMPTON FOR EID</div>
+            <span class="label label--small">ALL DAY</span>
+          </div>
+
+          <div>
+            <div class="title title--small" data-clamp="1">BLUE BOX AND GREEN BIN</div>
+            <span class="label label--small">ALL DAY</span>
+          </div>
+
+          <div>
+            <div class="title title--small" data-clamp="1">HOCKEY WITH THE BOYS</div>
+            <span class="label label--small">7:00 PM</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title md:title--large">Calendar XL</span>
+  <span class="instance">DEMO · NOW ACTIVE</span>
+</div>
