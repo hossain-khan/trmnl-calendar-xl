@@ -1,46 +1,5 @@
-{% assign calendar = calendar_source %}
-{% assign events = calendar.events %}
-{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
-
 <div class="layout">
   {% if calendar != blank and events != blank %}
-  {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
-  {% assign later_limit = trmnl.plugin_settings.custom_fields_values.max_later_items | default: '3' | plus: 0 %}
-  {% assign show_icons = trmnl.plugin_settings.custom_fields_values.show_icons == 'true' %}
-  {% assign now_icon = '' %}
-  {% assign next_icon = '' %}
-  {% assign later_icon = '' %}
-  {% if show_icons %}
-    {% assign now_icon = '●' %}
-    {% assign next_icon = '→' %}
-    {% assign later_icon = '+' %}
-  {% endif %}
-  {% assign time_pattern = '%-I:%M %p' %}
-  {% unless calendar.time_format == 'am/pm' %}
-    {% assign time_pattern = '%H:%M' %}
-  {% endunless %}
-  {% assign current_date_label = calendar.today_in_tz | date: calendar.date_format | upcase %}
-  {% assign current_time_label = 'now' | date: time_pattern %}
-  {% assign current_event = blank %}
-  {% assign next_event = blank %}
-  {% assign upcoming_count = 0 %}
-
-  {% for event in events %}
-    {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
-    {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
-    {% if start_ts > now_ts %}
-      {% assign upcoming_count = upcoming_count | plus: 1 %}
-    {% endif %}
-    {% unless event.all_day %}
-      {% if current_event == blank and start_ts <= now_ts and end_ts > now_ts %}
-        {% assign current_event = event %}
-      {% endif %}
-      {% if next_event == blank and start_ts > now_ts %}
-        {% assign next_event = event %}
-      {% endif %}
-    {% endunless %}
-  {% endfor %}
-
   <div class="flex flex--col gap--medium h--full">
     {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[42cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, icon: now_icon, current_event: current_event, value_classes: "value value--large md:value--xxlarge lg:value--xxxlarge", detail_classes: "title title--small md:title--medium lg:title--large", fit_height: 250, empty_value_classes: "value value--xlarge md:value--xxlarge lg:value--xxxlarge", empty_detail: "No current event", empty_detail_classes: "title title--small md:title--medium" %}
 
@@ -48,7 +7,6 @@
       {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small", meta: current_date_label, icon: next_icon, next_event: next_event, title_classes: "title title--medium md:title--large", time_classes: "value value--small md:value--medium value--tnums", empty_detail: "No timed events after this." %}
 
       <div class="outline rounded--large p--2 flex flex--col gap--small">
-        {% capture later_meta %}{{ upcoming_count }} UPCOMING{% endcapture %}
         {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}
       </div>
     </div>

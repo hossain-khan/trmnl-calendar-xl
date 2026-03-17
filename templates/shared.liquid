@@ -6,6 +6,47 @@
   Templates reference it as `calendar_source` — no hardcoded merge namespace needed.
 {% endcomment %}
 
+{% comment %} === Common setup: available to all layouts === {% endcomment %}
+{% assign calendar = calendar_source %}
+{% assign events = calendar.events %}
+{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
+{% assign now_ts = 'now' | date: '%s' | plus: 0 %}
+{% assign later_limit = trmnl.plugin_settings.custom_fields_values.max_later_items | default: '3' | plus: 0 %}
+{% assign show_icons = trmnl.plugin_settings.custom_fields_values.show_icons == 'true' %}
+{% assign now_icon = '' %}
+{% assign next_icon = '' %}
+{% assign later_icon = '' %}
+{% if show_icons %}
+  {% assign now_icon = '●' %}
+  {% assign next_icon = '→' %}
+  {% assign later_icon = '+' %}
+{% endif %}
+{% assign time_pattern = '%-I:%M %p' %}
+{% unless calendar.time_format == 'am/pm' %}
+  {% assign time_pattern = '%H:%M' %}
+{% endunless %}
+{% assign current_date_label = calendar.today_in_tz | date: calendar.date_format | upcase %}
+{% assign current_time_label = 'now' | date: time_pattern %}
+{% assign current_event = blank %}
+{% assign next_event = blank %}
+{% assign upcoming_count = 0 %}
+{% for event in events %}
+  {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+  {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
+  {% if start_ts > now_ts %}
+    {% assign upcoming_count = upcoming_count | plus: 1 %}
+  {% endif %}
+  {% unless event.all_day %}
+    {% if current_event == blank and start_ts <= now_ts and end_ts > now_ts %}
+      {% assign current_event = event %}
+    {% endif %}
+    {% if next_event == blank and start_ts > now_ts %}
+      {% assign next_event = event %}
+    {% endif %}
+  {% endunless %}
+{% endfor %}
+{% comment %} === End common setup === {% endcomment %}
+
 {% template error_state %}
 {% if size == 'full' %}
 <div class="flex flex--col flex--center-x flex--center-y gap--medium h--full text--center">
