@@ -20,10 +20,12 @@
     "url": "https://github.com/hossain-khan/trmnl-calendar-xl/issues"
   },
   "scripts": {
-    "validate": "echo 'No build step required for TRMNL Liquid templates'"
+    "validate": "npm run validate:json && npm run validate:yaml",
+    "validate:json": "node scripts/validate-json.js",
+    "validate:yaml": "yamllint -c .yamllint.yml settings.yml custom-fields.yml"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20.0.0"
   },
   "devDependencies": {},
   "files": [
