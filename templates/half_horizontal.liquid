@@ -1,13 +1,19 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
   <div class="flex flex--col gap--medium h--full">
-    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--xsmall h--[42cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, icon: now_icon, current_event: current_event, value_classes: "value value--large md:value--xlarge", detail_classes: "title title--small md:title--medium", fit_height: 120, empty_value_classes: "value value--large md:value--xlarge" %}
+    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--xsmall h--[50cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, icon: now_icon, event: primary_event, label: primary_label, value_classes: "value value--xlarge md:value--xxlarge", detail_classes: "title title--small md:title--medium", fit_height: 140, empty_value_classes: "value value--xlarge md:value--xxlarge" %}
 
+    {% if is_free and next_event != blank %}
+    <div class="outline rounded--large p--2 flex flex--col gap--xsmall" style="flex: 1;">
+      {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
+    </div>
+    {% else %}
     <div class="grid grid--cols-2 gap--medium">
       {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", icon: next_icon, next_event: next_event, title_classes: "title title--small md:title--medium", time_classes: "value value--xsmall md:value--small value--tnums", empty_detail: "No more timed events." %}
 
       {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", icon: later_icon, events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
     </div>
+    {% endif %}
   </div>
   {% else %}
   {% render "error_state", size: "half" %}

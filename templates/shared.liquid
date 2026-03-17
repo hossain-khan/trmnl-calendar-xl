@@ -29,6 +29,7 @@
 {% assign current_time_label = 'now' | date: time_pattern %}
 {% assign current_event = blank %}
 {% assign next_event = blank %}
+{% assign secondary_event = blank %}
 {% assign upcoming_count = 0 %}
 {% for event in events %}
   {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
@@ -42,9 +43,31 @@
     {% endif %}
     {% if next_event == blank and start_ts > now_ts %}
       {% assign next_event = event %}
+    {% elsif secondary_event == blank and start_ts > now_ts and next_event != blank %}
+      {% assign secondary_event = event %}
     {% endif %}
   {% endunless %}
 {% endfor %}
+{% comment %}
+  Derived display variables:
+  - is_free: true when no event is active right now
+  - primary_event / primary_label: when free but next event exists, promote NEXT into the hero
+  - display_next_event: secondary_event when free (used by quadrant NEXT cell to avoid repeating the hero)
+{% endcomment %}
+{% assign is_free = false %}
+{% if current_event == blank %}
+  {% assign is_free = true %}
+{% endif %}
+{% assign primary_event = current_event %}
+{% assign primary_label = 'NOW' %}
+{% if is_free and next_event != blank %}
+  {% assign primary_event = next_event %}
+  {% assign primary_label = 'NEXT' %}
+{% endif %}
+{% assign display_next_event = next_event %}
+{% if is_free %}
+  {% assign display_next_event = secondary_event %}
+{% endif %}
 {% comment %} === End common setup === {% endcomment %}
 
 {% template error_state %}
@@ -83,10 +106,10 @@
 
 {% template now_panel %}
 <div class="{{ panel_classes }}">
-  {% render "section_label", text: "NOW", meta: meta, inverted: true, icon: icon %}
-  {% if current_event != blank %}
-  <div class="{{ value_classes }}" data-value-fit="true" data-value-fit-max-height="{{ fit_height }}">{{ current_event.summary | upcase }}</div>
-  <div class="{{ detail_classes }}">{{ current_event.start }} - {{ current_event.end }}</div>
+  {% render "section_label", text: label | default: "NOW", meta: meta, inverted: true, icon: icon %}
+  {% if event != blank %}
+  <div class="{{ value_classes }}" data-value-fit="true" data-value-fit-max-height="{{ fit_height }}">{{ event.summary | upcase }}</div>
+  <div class="{{ detail_classes }}">{{ event.start }} - {{ event.end }}</div>
   {% else %}
   <div class="{{ empty_value_classes | default: value_classes }}">{{ empty_value | default: 'FREE' }}</div>
   {% if empty_detail and empty_detail != blank %}
@@ -120,6 +143,9 @@
     {% if next_event != blank and event.date_time == next_event.date_time and event.summary == next_event.summary %}
       {% assign is_next_match = true %}
     {% endif %}
+    {% if skip_extra_event != blank and event.date_time == skip_extra_event.date_time and event.summary == skip_extra_event.summary %}
+      {% assign is_next_match = true %}
+    {% endif %}
     {% if start_ts > now_ts and is_next_match == false and later_count < later_limit %}
       {% if item_style == 'stacked' %}
       <div class="item">
@@ -149,7 +175,7 @@
 {% template later_panel %}
 <div class="{{ panel_classes }}">
   {% render "section_label", text: "LATER", meta: meta, inverted: false, icon: icon %}
-  {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: wrapper_classes, row_classes: row_classes, title_classes: title_classes, time_classes: time_classes, empty_text: empty_text, all_day_label: all_day_label, item_style: item_style %}
+  {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: wrapper_classes, row_classes: row_classes, title_classes: title_classes, time_classes: time_classes, empty_text: empty_text, all_day_label: all_day_label, item_style: item_style, skip_extra_event: skip_extra_event %}
 </div>
 {% endtemplate %}
 
