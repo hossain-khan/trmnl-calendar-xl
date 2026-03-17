@@ -14,24 +14,7 @@ author: "Hossain Khan"
 version: "1.0.0"
 tap_action_url: ""
 
-# Expected backend response shape:
-# {
-#   "has_data": true,
-#   "current_date_label": "MON, MAR 16",
-#   "current_time_label": "14:32",
-#   "current_event": {
-#     "title": "DEEP WORK",
-#     "time_label": "14:00 - 16:00"
-#   },
-#   "next_event": {
-#     "title": "BATH",
-#     "time_label": "19:45 - 20:15"
-#   },
-#   "later_events": [
-#     { "title": "PARTY", "time_label": "17:00" },
-#     { "title": "TECH TALK", "time_label": "11:30" }
-#   ]
-# }
-#
-# The backend should derive current_event, next_event, and later_events from
-# raw calendar events so the Liquid templates can stay simple and fast.
+# Current implementation note:
+# Calendar XL derives NOW, NEXT, and LATER directly from TRMNL Plugin Merge data
+# supplied by a native calendar plugin. The Liquid templates expect a namespaced
+# merge root such as google_calendar_29713.

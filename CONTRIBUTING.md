@@ -1,139 +1,60 @@
 # Contributing
 
-Thank you for your interest in contributing to this TRMNL plugin template!
+Contributions should improve Calendar XL as a Merge-based TRMNL plugin, not reintroduce generic template scaffolding.
 
-## How to Contribute
+## Reporting Issues
 
-### Reporting Issues
+Open an issue with:
 
-Found a bug or have a suggestion? Please open an issue with:
+- A clear description of the problem
+- The template or doc affected
+- The merged payload shape involved, when relevant
+- Screenshots if the problem is visual
 
-- **Title**: Clear, descriptive title
-- **Description**: What's the problem?
-- **Steps to reproduce**: How to see the issue (if applicable)
-- **Expected behavior**: What should happen
-- **Screenshots**: If visually relevant
+## Submitting Changes
 
-### Suggesting Improvements
-
-Have an idea to make the template better?
-
-1. Check existing issues/PRs to avoid duplicates
-2. Describe your improvement clearly
-3. Explain why it would benefit developers
-4. Provide examples if possible
-
-### Submitting Changes
-
-1. **Fork the repository**
-   ```bash
-   git clone https://github.com/your-username/trmnl-plugin-template.git
-   ```
-
-2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Make your changes**
-   - Update template files as needed
-   - Update documentation to reflect changes
-   - Keep code clean and consistent
-
-4. **Test your changes**
-   - Test in TRMNL Markup Editor
-   - Verify all layouts still work
-   - Check responsive behavior
-
-5. **Commit your changes**
-   ```bash
-   git commit -m "Describe your changes clearly"
-   ```
-
-6. **Push to your fork**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-7. **Open a Pull Request**
-   - Clear title and description
-   - Reference any related issues
-   - Include screenshots for visual changes
+1. Fork the repository.
+2. Create a focused branch.
+3. Keep the change set narrow.
+4. Update documentation when behavior changes.
+5. Open a pull request with a concise description and screenshots for layout changes.
 
 ## Development Guidelines
 
-### Code Style
+- Use TRMNL framework utilities before adding custom styling.
+- Keep shared logic in [templates/shared.liquid](templates/shared.liquid).
+- Preserve the Now / Next / Later hierarchy from [docs/PRD.md](docs/PRD.md).
+- Keep docs aligned with the current Merge-only architecture.
+- Do not add backend-contract examples unless the repository actually gains a backend.
 
-- **Liquid templates**: 2-space indentation
-- **YAML configs**: 2-space indentation
-- **Comments**: Explain the "why", not just the "what"
-- **Framework first**: Always use TRMNL utilities over custom CSS
+## Merge-Specific Rules
 
-### Template Best Practices
+- If the merge namespace changes, update all four layout files together.
+- Test with a namespaced payload such as [assets/demo/trmnl-plugin-merge-snapshot.json](assets/demo/trmnl-plugin-merge-snapshot.json), not with a flat event list.
+- Verify NOW and NEXT still ignore all-day events unless the product decision changes.
 
-- Always include error states
-- Test all 4 layouts (full, half_horizontal, half_vertical, quadrant)
-- Use responsive classes: `sm:`, `md:`, `lg:`
-- Extract reusable components to `shared.liquid`
-- Document complex logic with comments
-- Check for accessibility (alt text, semantic HTML)
+## Testing Expectations
 
-### Documentation
+Before opening a pull request, validate:
 
-When adding features:
-- Update `README.md` if user-facing
-- Update `.github/copilot-instructions.md` if pattern-based
-- Add examples for new components
-- Keep documentation clear and concise
+- Full, half horizontal, half vertical, and quadrant layouts
+- Empty and fallback states
+- Long event titles
+- Different `max_later_items` values
+- Different device sizes in the TRMNL Markup Editor
 
-### Testing
+## Documentation Expectations
 
-All changes should be tested:
+Update these when relevant:
 
-- ✅ In TRMNL Markup Editor across all device sizes
-- ✅ With sample data and edge cases
-- ✅ Error states and fallbacks
-- ✅ Responsive behavior (landscape/portrait)
-- ✅ Different bit-depths (1-bit, 2-bit, 4-bit, 8-bit)
+- [README.md](README.md) for architecture and usage changes
+- [GETTING_STARTED.md](GETTING_STARTED.md) for workflow changes
+- [docs/TECHNICAL_SKETCH.md](docs/TECHNICAL_SKETCH.md) for implementation details
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) for project-specific agent guidance
 
-## What We're Looking For
+## Questions
 
-### High Priority
-
-- Bug fixes and critical issues
-- Documentation improvements
-- New reusable components
-- Better error handling patterns
-- Performance optimizations
-- Accessibility improvements
-
-### Welcome Contributions
-
-- Additional example templates
-- Better comments/explanations
-- More comprehensive error patterns
-- Testing guides
-- Deployment examples
-- Integration examples
-
-### Less Priority
-
-- Cosmetic changes
-- Opinionated style changes (unless improving consistency)
-- Features that complicate the template
-- Major API changes
-
-## Questions?
-
+- Review [README.md](README.md)
 - Review [GETTING_STARTED.md](GETTING_STARTED.md)
-- Check [README.md](README.md)
-- Look at [.github/copilot-instructions.md](.github/copilot-instructions.md)
-- Search existing issues/discussions
-
-## Code of Conduct
-
-Be respectful and constructive. This is a community for developers helping developers.
-
----
-
-**Thank you for making this template better! 🙏**
+- Review [docs/TECHNICAL_SKETCH.md](docs/TECHNICAL_SKETCH.md)
+- Review [.github/copilot-instructions.md](.github/copilot-instructions.md)

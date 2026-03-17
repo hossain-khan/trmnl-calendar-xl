@@ -1,39 +1,45 @@
 # Getting Started
 
-This repository is no longer a generic template. It is scoped to the Calendar XL concept from the Now / Next / Later PRD.
+Calendar XL renders entirely from TRMNL Plugin Merge data supplied by a native calendar plugin.
 
-## 1. Connect a Calendar Source
+## 1. Add a Native Calendar Plugin
 
-Set a real backend endpoint in [settings.yml](settings.yml):
+Create or connect a native TRMNL calendar source such as Google Calendar. Confirm that it produces the fields shown in [assets/demo/trmnl-plugin-data-calendar.json](assets/demo/trmnl-plugin-data-calendar.json).
 
-```yaml
-polling_url: "https://your-calendar-api.example.com/trmnl/agenda"
-```
+## 2. Merge That Plugin Into Calendar XL
 
-The backend is responsible for:
+In TRMNL, configure Calendar XL to receive the native calendar plugin through Plugin Merge. The merged payload will appear under a namespaced root such as `google_calendar_29713`.
 
-- Fetching raw calendar events
-- Deriving `current_event`, `next_event`, and `later_events`
-- Formatting user-facing time labels
-- Respecting plugin settings such as `max_later_items` and `time_format`
+The current layouts are written against a single merge namespace and do not auto-discover it.
 
-## 2. Configure the Plugin Fields
+## 3. Update the Merge Namespace in the Templates
 
-The current fields in [custom-fields.yml](custom-fields.yml) are aligned with the PRD and cover the MVP configuration:
+Replace the hard-coded namespace at the top of each layout file when your connected calendar instance uses a different setting id:
 
-- Calendar feed URL
+- [templates/full.liquid](templates/full.liquid)
+- [templates/half_horizontal.liquid](templates/half_horizontal.liquid)
+- [templates/half_vertical.liquid](templates/half_vertical.liquid)
+- [templates/quadrant.liquid](templates/quadrant.liquid)
+
+Also update the explanatory note in [templates/shared.liquid](templates/shared.liquid).
+
+## 4. Configure the Optional UI Fields
+
+The current implementation uses these plugin fields from [custom-fields.yml](custom-fields.yml):
+
 - Maximum number of LATER items
-- Show all-day events
-- 12h or 24h time formatting
-- Compact mode
 - Optional section icons
 - Custom title override
 
-## 3. Use the Sample Payload
+Time format and event formatting come from the merged calendar payload.
 
-Start with [assets/demo/sample-data.json](assets/demo/sample-data.json) in the TRMNL Markup Editor. It exercises all three agenda sections and the date/time context used by the quadrant layout.
+## 5. Load the Demo Merge Payload
 
-## 4. Verify the Layouts
+Use [assets/demo/trmnl-plugin-merge-snapshot.json](assets/demo/trmnl-plugin-merge-snapshot.json) in the TRMNL Markup Editor when validating layout behavior.
+
+If you want to inspect the raw calendar data without the merge wrapper, use [assets/demo/trmnl-plugin-data-calendar.json](assets/demo/trmnl-plugin-data-calendar.json).
+
+## 6. Verify Each Layout
 
 Test each template against the PRD:
 
@@ -42,43 +48,20 @@ Test each template against the PRD:
 - [templates/half_vertical.liquid](templates/half_vertical.liquid): NOW left, future agenda right.
 - [templates/quadrant.liquid](templates/quadrant.liquid): compact four-block dashboard.
 
-## 5. Check Edge Cases
+## 7. Check Edge Cases
 
-Before wiring this into a real calendar backend, verify:
+Validate these cases before publishing:
 
 - No current event shows `FREE`
-- No next event shows a clear fallback
+- No next timed event shows a clear fallback
 - Long titles clamp without breaking layout
-- All-day events can be excluded or included in LATER
+- All-day events stay out of NOW and NEXT
 - Back-to-back meetings switch NOW and NEXT cleanly at minute boundaries
+- Different `max_later_items` values behave as expected outside the quadrant layout
 
-## 6. Backend Output Example
+## 8. Refresh Expectations
 
-```json
-{
-  "has_data": true,
-  "current_date_label": "MON, MAR 16",
-  "current_time_label": "14:32",
-  "context_label": "3 UPCOMING",
-  "current_event": {
-    "title": "DEEP WORK",
-    "time_label": "14:00 - 16:00",
-    "is_free": false
-  },
-  "next_event": {
-    "title": "BATH",
-    "time_label": "19:45 - 20:15"
-  },
-  "later_events": [
-    { "title": "PARTY", "time_label": "17:00" },
-    { "title": "TECH TALK", "time_label": "11:30" }
-  ]
-}
-```
-
-## 7. Refresh Expectations
-
-The plugin is configured to refresh every minute. If your backend caches responses, keep the cache window below 60 seconds or NOW and NEXT will drift during event transitions.
+The plugin refreshes every minute. Calendar XL derives its state at render time from the merged event list, so NOW and NEXT transition based on the current device render time plus the merged event timestamps.
 
 ## Framework Classes Reference
 
@@ -125,9 +108,9 @@ portrait:
 ## Troubleshooting
 
 **Templates not rendering?**
-- Check for syntax errors (unmatched tags, quotes)
-- Verify JSON data structure matches template variables
-- Test in markup editor first before publishing
+- Check for syntax errors such as unmatched tags or quotes.
+- Verify the merge namespace in the template matches your actual merged payload.
+- Test with [assets/demo/trmnl-plugin-merge-snapshot.json](assets/demo/trmnl-plugin-merge-snapshot.json) before debugging live data.
 
 **Layout breaks on some devices?**
 - Test on all device sizes in markup editor
@@ -135,9 +118,9 @@ portrait:
 - Avoid fixed widths - use `flex: 1` or percentages
 
 **Data not displaying?**
-- Verify backend API returns valid JSON
-- Check custom field names match template variables
-- Add error states to handle missing data
+- Confirm the merged node exists and contains an `events` array.
+- Check that the layout files all point to the same plugin merge namespace.
+- Verify your native calendar plugin exposes `start_full`, `end_full`, `start`, and `end`.
 
 **Text overflowing?**
 - Use `data-clamp="2"` to limit lines
@@ -149,8 +132,4 @@ portrait:
 - Check [TRMNL Framework Docs](https://trmnl.com/framework)
 - Read [Plugin Guides](https://help.trmnl.com/en/collections/7820559-plugin-guides)
 - Review [Liquid Documentation](https://shopify.github.io/liquid/)
-- Check `.github/copilot-instructions.md` for project-specific guidance
-
----
-
-**Good luck building your TRMNL plugin! 🎉**
+- Check [.github/copilot-instructions.md](.github/copilot-instructions.md) for project-specific guidance

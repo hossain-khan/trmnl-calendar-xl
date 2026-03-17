@@ -1,306 +1,98 @@
-# 🧠 How TRMNL Plugin System Actually Works
-
-From their SDK + BYOS repo:
-
-* UI is rendered as **HTML → image (headless Chrome)** ([GitHub][1])
-* Templates use **Liquid (Shopify-style templating)** ([GitHub][1])
-* You inject **JSON data → Liquid → HTML → screen image** ([GitHub][1])
-
-👉 So your job:
-
-1. Prepare data (`now`, `next`, `later`) - this will come from https://docs.trmnl.com/go/private-api/plugin-data
-2. Render with Liquid templates
-3. Use TRMNL CSS framework (`plugins.css`)
-
----
-
-# 📦 Expected Data Contract (IMPORTANT)
-
-Your `PrepareData.ts` (or backend) should output:
-
-This format will be different - load format from https://docs.trmnl.com/go/private-api/plugin-data
-
-```json
-{
-  "now": {
-    "title": "Deep Work",
-    "start": "14:00",
-    "end": "16:00"
-  },
-  "next": {
-    "title": "Bath",
-    "start": "19:45",
-    "end": "20:15"
-  },
-  "later": [
-    { "title": "Party", "start": "17:00" },
-    { "title": "Tech Talk", "start": "11:30" }
-  ],
-  "meta": {
-    "date": "MON, MAR 16",
-    "time": "14:32"
-  }
-}
-```
-
----
-
-# 🎨 Shared Base Template (REUSE THIS)
-
-All layouts share this base wrapper:
-
-```liquid
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="https://usetrmnl.com/css/latest/plugins.css">
-  <style>
-    body { font-family: sans-serif; }
-    .big { font-size: 48px; font-weight: bold; }
-    .medium { font-size: 28px; }
-    .small { font-size: 18px; }
-    .section { padding: 12px; }
-    .divider { border-top: 2px solid #000; margin: 8px 0; }
-  </style>
-</head>
-<body class="environment trmnl">
-<div class="screen">
-```
-
----
-
-# 🖥️ 1. FULL SCREEN TEMPLATE
-
-```liquid
-<div class="section" style="height:50%;">
-  <div class="small">NOW</div>
-  <div class="big">
-    {{ now.title | default: "FREE" }}
-  </div>
-  <div class="medium">
-    {{ now.start }} – {{ now.end }}
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<div class="section" style="height:25%;">
-  <div class="small">NEXT</div>
-  <div class="medium">{{ next.title }}</div>
-  <div class="small">{{ next.start }} – {{ next.end }}</div>
-</div>
-
-<div class="divider"></div>
-
-<div class="section" style="height:25%;">
-  {% for item in later limit:3 %}
-    <div class="small">• {{ item.title }} {{ item.start }}</div>
-  {% endfor %}
-</div>
-```
-
----
-
-# 📺 2. HALF HORIZONTAL (Top/Bottom)
-
-```liquid
-<div style="display:flex; flex-direction:column; height:100%;">
-
-  <!-- TOP: NOW -->
-  <div style="flex:1;" class="section">
-    <div class="small">NOW</div>
-    <div class="big">{{ now.title | default: "FREE" }}</div>
-    <div class="medium">{{ now.start }} – {{ now.end }}</div>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- BOTTOM -->
-  <div style="flex:1; display:flex;">
-    
-    <!-- NEXT -->
-    <div style="flex:1;" class="section">
-      <div class="small">NEXT</div>
-      <div class="medium">{{ next.title }}</div>
-      <div class="small">{{ next.start }}</div>
-    </div>
-
-    <!-- LATER -->
-    <div style="flex:1;" class="section">
-      <div class="small">LATER</div>
-      {% for item in later limit:2 %}
-        <div class="small">• {{ item.title }}</div>
-      {% endfor %}
-    </div>
-
-  </div>
-</div>
-```
-
----
-
-# 📱 3. HALF VERTICAL (Left/Right)
-
-```liquid
-<div style="display:flex; height:100%;">
-
-  <!-- LEFT: NOW -->
-  <div style="flex:1;" class="section">
-    <div class="small">NOW</div>
-    <div class="big">{{ now.title | default: "FREE" }}</div>
-    <div class="medium">{{ now.start }}</div>
-  </div>
-
-  <div style="width:2px; background:#000;"></div>
-
-  <!-- RIGHT -->
-  <div style="flex:1;" class="section">
-    
-    <div class="small">NEXT</div>
-    <div class="medium">{{ next.title }}</div>
-
-    <div class="divider"></div>
-
-    <div class="small">LATER</div>
-    {% for item in later limit:2 %}
-      <div class="small">• {{ item.title }}</div>
-    {% endfor %}
-    
-  </div>
-</div>
-```
+# Technical Sketch
 
----
-
-# 🧩 4. QUADRANT LAYOUT
+This document describes the current implementation in this repository.
 
-```liquid
-<div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; height:100%;">
+## Current Data Source
 
-  <!-- NOW -->
-  <div class="section">
-    <div class="small">NOW</div>
-    <div class="big">{{ now.title | default: "FREE" }}</div>
-  </div>
+Calendar XL renders from TRMNL Plugin Merge data produced by a native calendar plugin. The merged payload is exposed under a namespaced root such as `google_calendar_29713`.
 
-  <!-- NEXT -->
-  <div class="section">
-    <div class="small">NEXT</div>
-    <div class="medium">{{ next.title }}</div>
-    <div class="small">{{ next.start }}</div>
-  </div>
+The layouts currently hard-code that namespace at the top of each file:
 
-  <!-- LATER -->
-  <div class="section">
-    <div class="small">LATER</div>
-    {% for item in later limit:2 %}
-      <div class="small">• {{ item.title }}</div>
-    {% endfor %}
-  </div>
+- [templates/full.liquid](../templates/full.liquid)
+- [templates/half_horizontal.liquid](../templates/half_horizontal.liquid)
+- [templates/half_vertical.liquid](../templates/half_vertical.liquid)
+- [templates/quadrant.liquid](../templates/quadrant.liquid)
 
-  <!-- META -->
-  <div class="section">
-    <div class="medium">{{ meta.date }}</div>
-    <div class="big">{{ meta.time }}</div>
-  </div>
+## Reference Payloads
 
-</div>
-```
+- [assets/demo/trmnl-plugin-merge-snapshot.json](../assets/demo/trmnl-plugin-merge-snapshot.json): namespaced merge payload used for layout testing
+- [assets/demo/trmnl-plugin-data-calendar.json](../assets/demo/trmnl-plugin-data-calendar.json): raw native calendar payload without the merge namespace
 
----
+## Fields Used By The Templates
 
-# ⚙️ How This Maps to TRMNL Plugin
+From the merged calendar node:
 
-## File Structure (BYOS or Plugin)
+- `events`
+- `events[].summary`
+- `events[].date_time`
+- `events[].all_day`
+- `events[].start_full`
+- `events[].end_full`
+- `events[].start`
+- `events[].end`
+- `today_in_tz`
+- `date_format`
+- `time_format`
+- `event_layout`
 
-```id="1t1v0l"
-src/
- ├── Template/
- │    ├── now_next_full.liquid
- │    ├── now_next_half_horizontal.liquid
- │    ├── now_next_half_vertical.liquid
- │    └── now_next_quadrant.liquid
- ├── Data/
- │    └── PrepareData.ts
-```
+From plugin custom fields:
 
----
+- `max_later_items`
+- `show_icons`
+- `custom_title`
 
-## Switching Layouts
+## Derivation Logic
 
-You can pass layout type:
+Each layout follows the same broad flow:
 
-```json
-{
-  "layout": "full"
-}
-```
+1. Read `calendar.events` from the merged namespace.
+2. Compute `now_ts` from the current render time.
+3. Walk the event list once to select the active timed event and the next timed event.
+4. Render later items by walking future events again and skipping the selected next event.
+5. Derive date and time labels from `today_in_tz`, `date_format`, and `time_format`.
 
-Then in Liquid:
+The shared rendering primitives live in [templates/shared.liquid](../templates/shared.liquid).
 
-```liquid
-{% if layout == "full" %}
-  {% include "now_next_full" %}
-{% elsif layout == "half_horizontal" %}
-  {% include "now_next_half_horizontal" %}
-{% endif %}
-```
+## Event Selection Rules
 
----
+- `current_event` is the first non-all-day event where `start_full <= now < end_full`.
+- `next_event` is the first non-all-day event where `start_full > now`.
+- LATER shows future events after now, excluding the chosen `next_event`.
+- All-day events are excluded from NOW and NEXT.
 
-# 🚀 Bonus: Smart Enhancements (Worth Adding)
+## Layout Notes
 
-### 1. “Ends in X min”
+### Full
 
-Add in data:
+- NOW panel uses the strongest inverted treatment.
+- NEXT and LATER share the bottom row.
+- The title bar instance label comes from `calendar.event_layout`.
 
-```json
-"now": {
-  "endsIn": "1h 12m"
-}
-```
+### Half Horizontal
 
-```liquid
-<div class="small">Ends in {{ now.endsIn }}</div>
-```
+- NOW occupies the top half.
+- NEXT and LATER share the lower grid.
 
----
+### Half Vertical
 
-### 2. Empty State (VERY IMPORTANT)
+- NOW occupies the left column.
+- NEXT and LATER stack on the right.
 
-```liquid
-{{ now.title | default: "FREE" }}
-```
+### Quadrant
 
----
+- LATER is fixed to 2 items.
+- CONTEXT shows current time and current date.
 
-### 3. Priority Highlight
+## Known Constraints
 
-```liquid
-{% if now.title %}
-  style="background:black; color:white;"
-{% endif %}
-```
+- The merge namespace is duplicated across all four layout files.
+- `max_later_items` does not affect the quadrant layout.
+- `show_icons` is optional presentation only.
+- The repo does not contain a backend, API adapter, or pre-derivation step.
 
----
+## Testing Guidance
 
-# 🧠 Final Advice (from experience)
-
-If you ship only ONE layout first:
-
-👉 Ship **FULL SCREEN**
-
-Because:
-
-* Most readable
-* Best demo impact
-* Matches TRMNL philosophy (glanceability)
-
----
-
-If you want next step, I can:
-
-* Help you write **PrepareData.ts (calendar parsing logic)**
-* Or build a **complete working repo based on byos_node_lite** with your plugin ready to deploy
-
-[1]: https://github.com/usetrmnl/byos_node_lite?utm_source=chatgpt.com "GitHub - usetrmnl/byos_node_lite: Image server for TRMNL built with Node.js, JSX and HTML"
+- Use the namespaced snapshot when testing layout rendering.
+- Test both active-event and free-time scenarios.
+- Verify all-day events do not appear as NOW or NEXT.
+- Check long summaries in each layout size.

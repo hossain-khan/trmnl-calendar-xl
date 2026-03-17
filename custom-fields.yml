@@ -1,10 +1,3 @@
-- key: "calendar_feed_url"
-  type: "url"
-  label: "Calendar Feed URL"
-  placeholder: "https://example.com/calendar.ics"
-  required: true
-  description: "ICS or API endpoint used to build the Now / Next / Later agenda"
-
 - key: "max_later_items"
   type: "select"
   label: "Later Items"
@@ -17,29 +10,6 @@
     - label: "4 items"
       value: "4"
   description: "Maximum number of future events shown in the LATER section"
-
-- key: "show_all_day_events"
-  type: "checkbox"
-  label: "Show All-Day Events"
-  required: false
-  description: "When enabled, all-day events can appear in LATER with lower priority"
-
-- key: "time_format"
-  type: "select"
-  label: "Time Format"
-  required: true
-  options:
-    - label: "24 hour"
-      value: "24h"
-    - label: "12 hour"
-      value: "12h"
-  description: "Controls how event time labels are formatted by the backend"
-
-- key: "compact_mode"
-  type: "checkbox"
-  label: "Compact Mode"
-  required: false
-  description: "Prefer tighter spacing when your calendar titles are consistently short"
 
 - key: "show_icons"
   type: "checkbox"

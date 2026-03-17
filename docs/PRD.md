@@ -12,6 +12,10 @@ Design a **highly glanceable calendar view** optimized for distance reading on T
 * Providing quick awareness of **upcoming (NEXT)** and **future (LATER)** events
 * Using **large typography, minimal text, and strong hierarchy**
 
+## 1.1 Implementation Status
+
+The current repository implements this product direction using TRMNL Plugin Merge data from a native calendar plugin. NOW, NEXT, and LATER are derived in Liquid from merged calendar events rather than from a separate backend transformer.
+
 ---
 
 ## 2. 👤 User Problem
@@ -42,14 +46,17 @@ Traditional agenda views (like your screenshot) require:
 
 ## 4. 📦 Data Model
 
-### Input (from calendar API)
+### Input (from merged native calendar plugin)
 
 ```json
 Event {
-  title: string
-  startTime: ISO
-  endTime: ISO
-  isAllDay: boolean
+  summary: string
+  start_full: ISO | YYYY-MM-DD
+  end_full: ISO | YYYY-MM-DD
+  start: string
+  end: string
+  date_time: ISO | YYYY-MM-DD
+  all_day: boolean
 }
 ```
 
@@ -299,16 +306,13 @@ MON, MAR 16
 
 ## 8. ⚙️ Configuration Options
 
-Expose these in plugin:
+Current implementation exposes these options in Calendar XL:
 
 ```json
 {
   "maxLaterItems": 3,
-  "showAllDayEvents": false,
-  "timeFormat": "24h",
-  "showSeconds": false,
-  "compactMode": false,
-  "showIcons": true
+  "showIcons": true,
+  "customTitle": "Calendar XL"
 }
 ```
 
@@ -327,15 +331,12 @@ Expose these in plugin:
 
 ## 10. 🚀 MVP Scope
 
-Start with:
+Implemented in this repository:
 
 ✅ Full Screen
 ✅ Half Horizontal
-
-Then add:
-
-⬜ Half Vertical
-⬜ Quadrant
+✅ Half Vertical
+✅ Quadrant
 
 ---
 

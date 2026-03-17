@@ -16,7 +16,7 @@ Calendar XL is a TRMNL plugin for a highly glanceable agenda view. The product g
 
 ### Current Status
 
-The repository now contains project-specific layouts and configuration for the initial Now / Next / Later concept. The next implementation phase is wiring a real calendar backend to emit the derived fields these templates expect.
+The repository implements the Now / Next / Later concept directly from TRMNL Plugin Merge data. A native calendar plugin is merged into Calendar XL, and the Liquid templates derive the agenda state from the merged events array.
 
 ## Getting Started
 
@@ -26,7 +26,7 @@ For developers working on this project:
 2. **Review Documentation**:
   - `README.md` - Project overview and data contract
   - `docs/PRD.md` - Product requirements and layout intent
-  - `GETTING_STARTED.md` - Backend and testing checklist
+  - `GETTING_STARTED.md` - Merge setup and testing checklist
 3. **Test Templates**: Preview layouts in TRMNL Markup Editor or locally
 4. **Review Framework**: Familiarize yourself with [TRMNL Framework](https://trmnl.com/framework)
 
@@ -931,29 +931,24 @@ Based on [TRMNL Plugin Guides](https://help.trmnl.com/en/collections/7820559-plu
 
 ## Workflow
 
-[Describe your plugin's workflow - how data flows from source to display]
+Current workflow:
 
-Example workflow for polling strategy:
-
-1. **User Setup**: User configures plugin settings in TRMNL
-2. **TRMNL Polling**: Platform sends GET request to your endpoint (per refresh_frequency)
-3. **Data Fetch**: Your backend fetches/generates data
-4. **JSON Response**: Return JSON with template variables
-5. **TRMNL Rendering**: TRMNL platform merges JSON into templates
-6. **Display**: TRMNL sends rendered content to device for e-ink display
+1. **User Setup**: User connects a native calendar plugin in TRMNL.
+2. **Plugin Merge**: Calendar XL receives that native calendar payload through TRMNL Plugin Merge.
+3. **Namespace Binding**: The merged payload is exposed under a namespaced root such as `google_calendar_29713`.
+4. **Liquid Derivation**: Calendar XL templates compute NOW, NEXT, and LATER directly from the merged `events` array.
+5. **Display**: TRMNL renders the resulting HTML to the target e-ink device.
 
 ## Technical Stack
 
-[List your plugin's technical stack]
+Current stack:
 
-Example for polling-based plugin:
-
-- **Backend**: [Your backend technology - Cloudflare Workers, Node.js, Python, etc.]
-- **Framework**: [If applicable - Express, Hono, Flask, etc.]
-- **Language**: [TypeScript, JavaScript, Python, etc.]
-- **Caching**: [If applicable - Redis, KV, etc.]
-- **Monitoring**: [If applicable - Analytics, logging]
-- **Deployment**: [Where/how deployed]
+- **Data Source**: TRMNL Plugin Merge from a native calendar plugin
+- **Templates**: Liquid
+- **Framework**: TRMNL Framework v2
+- **Language**: Liquid and YAML configuration
+- **Runtime**: TRMNL hosted rendering
+- **Backend**: None in this repository
 
 ## Future Considerations
 
