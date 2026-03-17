@@ -11,7 +11,7 @@
 {% assign events = calendar.events %}
 {% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
-{% assign later_limit = trmnl.plugin_settings.custom_fields_values.max_later_items | default: '3' | plus: 0 %}
+{% assign later_limit = 3 %}
 {% assign time_pattern = '%-I:%M %p' %}
 {% unless calendar.time_format == 'am/pm' %}
   {% assign time_pattern = '%H:%M' %}
