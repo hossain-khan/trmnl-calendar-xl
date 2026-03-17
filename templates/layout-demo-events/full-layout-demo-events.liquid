@@ -1,0 +1,109 @@
+{% comment %}
+  DEMO: full.liquid — active NOW event state.
+  All HTML inlined (no render calls). Static data for responsive testing.
+
+  Devices tested:
+    TRMNL OG  (md, 800×480)  → layout ~436px tall → 50cqh ≈ 218px → value budget ~170px → fit_height 150
+    TRMNL X   (lg, 1040×780) → layout ~716px tall → 50cqh ≈ 358px → value budget ~310px → fit_height 290
+
+  Approach for responsive hero title:
+    Two <span data-value-fit> elements, each with device-appropriate fit_height.
+    block lg:hidden  → visible on sm/md, hidden on lg+
+    hidden lg:block  → hidden on sm/md, visible on lg+
+{% endcomment %}
+
+<div class="layout">
+  <div class="flex flex--col gap--medium h--full">
+
+    {% comment %} ============================================================
+      HERO PANEL — NOW (inverted, top 50% of layout height)
+    ============================================================ {% endcomment %}
+    <div class="rounded--large p--2 flex flex--col gap--small h--[50cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black">
+
+      {% comment %} Label row: section tag left, event time right {% endcomment %}
+      <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+        <span class="label label--small label--inverted">NOW</span>
+        <span class="label label--small label--inverted">2:15 PM – 3:15 PM</span>
+      </div>
+
+      {% comment %} Hero title — sm/md devices (hidden on TRMNL X) {% endcomment %}
+      <span class="value value--xxxlarge block lg:hidden"
+            data-value-fit="true"
+            data-value-fit-max-height="150">MEET SAMANTHA AND EMILY AT DMS</span>
+
+      {% comment %} Hero title — lg devices / TRMNL X (hidden on sm/md) {% endcomment %}
+      <span class="value value--xxxlarge hidden lg:block"
+            data-value-fit="true"
+            data-value-fit-max-height="290">MEET SAMANTHA AND EMILY AT DMS</span>
+
+    </div>
+
+    {% comment %} ============================================================
+      BOTTOM ROW — NEXT (left) + LATER (right), grows to fill remaining space
+    ============================================================ {% endcomment %}
+    <div class="grid grid--cols-2 gap--medium grow">
+
+      {% comment %} --- NEXT panel --- {% endcomment %}
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+
+        {% comment %} Section label row {% endcomment %}
+        <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+          <span class="label label--small label--underline">NEXT</span>
+          <span class="label label--small">MON, MAR 17</span>
+        </div>
+
+        {% comment %} Event title — scales up on larger screens {% endcomment %}
+        <div class="title title--medium md:title--large lg:value--xlarge" data-clamp="2">HOSSAIN BADMINTON 🏸</div>
+
+        {% comment %} Event time {% endcomment %}
+        <div class="value value--small md:value--medium lg:value--large value--tnums">8:00 PM – 9:30 PM</div>
+
+      </div>
+
+      {% comment %} --- LATER panel --- {% endcomment %}
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+
+        {% comment %} Section label row {% endcomment %}
+        <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+          <span class="label label--small label--underline">LATER</span>
+        </div>
+
+        {% comment %} Later items list — gap scales up on lg {% endcomment %}
+        <div class="flex flex--col gap--xsmall lg:gap--small">
+
+          <div class="item">
+            <div class="meta"><span class="index">•</span></div>
+            <div class="content">
+              <span class="title title--small md:title--medium lg:title--large" data-clamp="1">GO TO BRAMPTON FOR EID</span>
+              <span class="label label--small">ALL DAY</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="meta"><span class="index">•</span></div>
+            <div class="content">
+              <span class="title title--small md:title--medium lg:title--large" data-clamp="1">BLUE BOX AND GREEN BIN</span>
+              <span class="label label--small">ALL DAY</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="meta"><span class="index">•</span></div>
+            <div class="content">
+              <span class="title title--small md:title--medium lg:title--large" data-clamp="1">HOCKEY WITH THE BOYS</span>
+              <span class="label label--small">7:00 PM</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title md:title--large">Calendar XL</span>
+  <span class="instance">DEMO · NOW ACTIVE</span>
+</div>
