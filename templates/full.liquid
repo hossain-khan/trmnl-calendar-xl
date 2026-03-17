@@ -43,7 +43,7 @@
 
   <div class="flex flex--col gap--medium h--full">
     <div class="rounded--large p--2 flex flex--col gap--small 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="flex: 2; color: white;">
-      {% render "shared", template_name: "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
+      {% render "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
       {% if current_event != blank %}
       <div class="value value--large md:value--xxlarge lg:value--xxxlarge" data-value-fit="true" data-value-fit-max-height="250">
         {{ current_event.summary | upcase }}
@@ -57,7 +57,7 @@
 
     <div class="grid grid--cols-2 gap--medium" style="flex: 1;">
       <div class="outline rounded--large p--2 flex flex--col gap--small">
-        {% render "shared", template_name: "section_label", text: "NEXT", meta: current_date_label, inverted: false, icon: next_icon %}
+        {% render "section_label", text: "NEXT", meta: current_date_label, inverted: false, icon: next_icon %}
         {% if next_event != blank %}
         <div class="title title--medium md:title--large" data-clamp="2">{{ next_event.summary | upcase }}</div>
         <div class="value value--small md:value--medium value--tnums">{{ next_event.start }} - {{ next_event.end }}</div>
@@ -69,7 +69,7 @@
 
       <div class="outline rounded--large p--2 flex flex--col gap--small">
         {% capture later_meta %}{{ upcoming_count }} UPCOMING{% endcapture %}
-        {% render "shared", template_name: "section_label", text: "LATER", meta: later_meta, inverted: false, icon: later_icon %}
+        {% render "section_label", text: "LATER", meta: later_meta, inverted: false, icon: later_icon %}
         <div class="flex flex--col gap--xsmall" style="flex: 1;">
           {% assign later_count = 0 %}
           {% for event in events %}
@@ -99,8 +99,8 @@
     </div>
   </div>
   {% else %}
-  {% render "shared", template_name: "error_state", size: "full" %}
+  {% render "error_state", size: "full" %}
   {% endif %}
 </div>
 
-{% render "shared", template_name: "title_bar", title: plugin_title, instance: calendar.event_layout | upcase %}
+{% render "title_bar", title: plugin_title, instance: calendar.event_layout | upcase %}

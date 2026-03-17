@@ -42,7 +42,7 @@
 
   <div class="grid grid--cols-2 gap--small h--full">
     <div class="rounded p--1 flex flex--col gap--xsmall 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black" style="color: white;">
-      {% render "shared", template_name: "section_label", text: "NOW", inverted: true, icon: now_icon %}
+      {% render "section_label", text: "NOW", inverted: true, icon: now_icon %}
       {% if current_event != blank %}
       <div class="value value--small md:value--medium" data-value-fit="true" data-value-fit-max-height="88">{{ current_event.summary | upcase }}</div>
       <div class="label label--small label--inverted">{{ current_event.start }}</div>
@@ -52,7 +52,7 @@
     </div>
 
     <div class="outline rounded p--1 flex flex--col gap--xsmall">
-      {% render "shared", template_name: "section_label", text: "NEXT", inverted: false, icon: next_icon %}
+      {% render "section_label", text: "NEXT", inverted: false, icon: next_icon %}
       {% if next_event != blank %}
       <div class="title title--small" data-clamp="2">{{ next_event.summary | upcase }}</div>
       <div class="label label--small">{{ next_event.start }}</div>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="outline rounded p--1 flex flex--col gap--xsmall">
-      {% render "shared", template_name: "section_label", text: "LATER", meta: upcoming_count, inverted: false, icon: later_icon %}
+      {% render "section_label", text: "LATER", meta: upcoming_count, inverted: false, icon: later_icon %}
       {% assign later_count = 0 %}
       {% for event in events %}
         {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
@@ -90,8 +90,8 @@
     </div>
   </div>
   {% else %}
-  {% render "shared", template_name: "error_state", size: "quadrant" %}
+  {% render "error_state", size: "quadrant" %}
   {% endif %}
 </div>
 
-{% render "shared", template_name: "title_bar", title: plugin_title, instance: "2 x 2" %}
+{% render "title_bar", title: plugin_title, instance: "2 x 2" %}
