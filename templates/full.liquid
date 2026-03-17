@@ -42,59 +42,14 @@
   {% endfor %}
 
   <div class="flex flex--col gap--medium h--full">
-    <div class="rounded--large p--2 flex flex--col gap--small h--[42cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black">
-      {% render "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
-      {% if current_event != blank %}
-      <div class="value value--large md:value--xxlarge lg:value--xxxlarge" data-value-fit="true" data-value-fit-max-height="250">
-        {{ current_event.summary | upcase }}
-      </div>
-      <div class="title title--small md:title--medium lg:title--large">{{ current_event.start }} - {{ current_event.end }}</div>
-      {% else %}
-      <div class="value value--xlarge md:value--xxlarge lg:value--xxxlarge">FREE</div>
-      <div class="title title--small md:title--medium">No current event</div>
-      {% endif %}
-    </div>
+    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small h--[42cqh] text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, icon: now_icon, current_event: current_event, value_classes: "value value--large md:value--xxlarge lg:value--xxxlarge", detail_classes: "title title--small md:title--medium lg:title--large", fit_height: 250, empty_value_classes: "value value--xlarge md:value--xxlarge lg:value--xxxlarge", empty_detail: "No current event", empty_detail_classes: "title title--small md:title--medium" %}
 
     <div class="grid grid--cols-2 gap--medium">
-      <div class="outline rounded--large p--2 flex flex--col gap--small">
-        {% render "section_label", text: "NEXT", meta: current_date_label, inverted: false, icon: next_icon %}
-        {% if next_event != blank %}
-        <div class="title title--medium md:title--large" data-clamp="2">{{ next_event.summary | upcase }}</div>
-        <div class="value value--small md:value--medium value--tnums">{{ next_event.start }} - {{ next_event.end }}</div>
-        {% else %}
-        <div class="title title--medium md:title--large">CLEAR</div>
-        <div class="description">No timed events after this.</div>
-        {% endif %}
-      </div>
+      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--small", meta: current_date_label, icon: next_icon, next_event: next_event, title_classes: "title title--medium md:title--large", time_classes: "value value--small md:value--medium value--tnums", empty_detail: "No timed events after this." %}
 
       <div class="outline rounded--large p--2 flex flex--col gap--small">
         {% capture later_meta %}{{ upcoming_count }} UPCOMING{% endcapture %}
-        {% render "section_label", text: "LATER", meta: later_meta, inverted: false, icon: later_icon %}
-        <div class="flex flex--col gap--xsmall">
-          {% assign later_count = 0 %}
-          {% for event in events %}
-            {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
-            {% assign is_next_match = false %}
-            {% if next_event != blank and event.date_time == next_event.date_time and event.summary == next_event.summary %}
-              {% assign is_next_match = true %}
-            {% endif %}
-            {% if start_ts > now_ts and is_next_match == false and later_count < later_limit %}
-            <div class="item">
-              <div class="meta">
-                <span class="index">•</span>
-              </div>
-              <div class="content">
-                <span class="title title--small" data-clamp="1">{{ event.summary | upcase }}</span>
-                <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %}</span>
-              </div>
-            </div>
-            {% assign later_count = later_count | plus: 1 %}
-            {% endif %}
-          {% endfor %}
-          {% if later_count == 0 %}
-          <div class="description">Nothing else scheduled.</div>
-          {% endif %}
-        </div>
+        {% render "later_items", events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing else scheduled.", item_style: "stacked", all_day_label: "ALL DAY" %}
       </div>
     </div>
   </div>

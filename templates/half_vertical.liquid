@@ -37,52 +37,12 @@
   {% endfor %}
 
   <div class="grid grid--cols-2 portrait:grid--cols-1 gap--medium h--full">
-    <div class="rounded--large p--2 flex flex--col gap--small flex--center-y text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black">
-      {% render "section_label", text: "NOW", meta: current_time_label, inverted: true, icon: now_icon %}
-      {% if current_event != blank %}
-      <div class="value value--large md:value--xlarge" data-value-fit="true" data-value-fit-max-height="160">{{ current_event.summary | upcase }}</div>
-      <div class="title title--small md:title--medium">{{ current_event.start }} - {{ current_event.end }}</div>
-      {% else %}
-      <div class="value value--large md:value--xlarge">FREE</div>
-      <div class="description">No current event</div>
-      {% endif %}
-    </div>
+    {% render "now_panel", panel_classes: "rounded--large p--2 flex flex--col gap--small flex--center-y text--white 1bit:bg--black 2bit:bg--gray-75 4bit:bg--black", meta: current_time_label, icon: now_icon, current_event: current_event, value_classes: "value value--large md:value--xlarge", detail_classes: "title title--small md:title--medium", fit_height: 160, empty_value_classes: "value value--large md:value--xlarge", empty_detail: "No current event", empty_detail_classes: "description" %}
 
     <div class="flex flex--col gap--medium">
-      <div class="outline rounded--large p--2 flex flex--col gap--xsmall">
-        {% render "section_label", text: "NEXT", inverted: false, icon: next_icon %}
-        {% if next_event != blank %}
-        <div class="title title--small md:title--medium" data-clamp="2">{{ next_event.summary | upcase }}</div>
-        <div class="value value--xsmall md:value--small value--tnums">{{ next_event.start }} - {{ next_event.end }}</div>
-        {% else %}
-        <div class="title title--small md:title--medium">CLEAR</div>
-        <div class="description">Nothing urgent next.</div>
-        {% endif %}
-      </div>
+      {% render "next_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", icon: next_icon, next_event: next_event, title_classes: "title title--small md:title--medium", time_classes: "value value--xsmall md:value--small value--tnums", empty_detail: "Nothing urgent next." %}
 
-      <div class="outline rounded--large p--2 flex flex--col gap--xsmall">
-        {% render "section_label", text: "LATER", inverted: false, icon: later_icon %}
-        <div class="flex flex--col gap--xsmall text--left">
-          {% assign later_count = 0 %}
-          {% for event in events %}
-            {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
-            {% assign is_next_match = false %}
-            {% if next_event != blank and event.date_time == next_event.date_time and event.summary == next_event.summary %}
-              {% assign is_next_match = true %}
-            {% endif %}
-            {% if start_ts > now_ts and is_next_match == false and later_count < later_limit %}
-            <div class="flex flex--row flex--between gap--small">
-              <span class="title title--small" data-clamp="1">{{ event.summary | upcase }}</span>
-              <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %}</span>
-            </div>
-            {% assign later_count = later_count | plus: 1 %}
-            {% endif %}
-          {% endfor %}
-          {% if later_count == 0 %}
-          <div class="description">Nothing later.</div>
-          {% endif %}
-        </div>
-      </div>
+      {% render "later_panel", panel_classes: "outline rounded--large p--2 flex flex--col gap--xsmall", icon: later_icon, events: events, next_event: next_event, now_ts: now_ts, later_limit: later_limit, wrapper_classes: "flex flex--col gap--xsmall text--left", row_classes: "flex flex--row flex--between gap--small", title_classes: "title title--small", time_classes: "label label--small", empty_text: "Nothing later.", item_style: "row", all_day_label: "ALL DAY" %}
     </div>
   </div>
   {% else %}
