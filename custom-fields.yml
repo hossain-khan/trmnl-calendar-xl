@@ -15,6 +15,6 @@
 - keyname: "demo_mode"
   field_type: "boolean"
   name: "Demo Mode"
-  description: "ON by default. Shows sample events to protect personal data in the public preview. Turn OFF once your calendar is connected."
+  description: "ON by default. Shows sample events to protect personal data in the public preview. <br> ⏻ <b>Turn OFF</b> once your calendar is connected."
   optional: true
   default: true
