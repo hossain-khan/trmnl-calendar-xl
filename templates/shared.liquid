@@ -69,6 +69,14 @@
     {% assign title_bar_status_full = 'BUSY · ' | append: upcoming_count | append: ' MORE' %}
   {% endif %}
 {% endunless %}
+{% assign capitalize_events = trmnl.plugin_settings.custom_fields_values.capitalize_text | default: "true" %}
+{% if capitalize_events != "false" %}
+  {% assign primary_event_display = primary_event.summary | upcase %}
+  {% assign next_event_display = display_next_event.summary | upcase %}
+{% else %}
+  {% assign primary_event_display = primary_event.summary %}
+  {% assign next_event_display = display_next_event.summary %}
+{% endif %}
 {% comment %} === End common setup === {% endcomment %}
 
 {% template error_state %}

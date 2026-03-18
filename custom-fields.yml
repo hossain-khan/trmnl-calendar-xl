@@ -5,3 +5,10 @@
   description: "Select the Google Calendar plugin instance to merge events from"
   help_text: "Only Google Calendar plugins active in a playlist are shown. Hide the native plugin in your playlist to use it here."
 
+- keyname: "capitalize_text"
+  field_type: "boolean"
+  name: "Capitalize Event Text"
+  description: "Display event names in ALL CAPS"
+  optional: true
+  default: true
+
