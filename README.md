@@ -92,7 +92,8 @@ All-day events are skipped for NOW and NEXT. They can still appear in LATER when
 The current templates use these fields from [custom-fields.yml](custom-fields.yml):
 
 - `calendar_source` — `plugin_instance_select` field; user picks their Google Calendar plugin instance; resolves to the merged data node in templates
-- `custom_title`
+- `capitalize_text` — optional boolean; displays event names in ALL CAPS when enabled (default on)
+- `demo_mode` — optional boolean; shows synthetic sample events to protect personal data in public previews (default on, turn off once calendar is connected)
 
 Everything else about event formatting comes from the merged native calendar payload, not from a separate backend contract.
 

@@ -1,5 +1,4 @@
-strategy: "polling"
-polling_url: "https://your-calendar-api.example.com/trmnl/agenda"
+strategy: "static"
 refresh_frequency: 1
 
 layouts:

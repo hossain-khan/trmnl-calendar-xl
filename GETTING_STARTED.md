@@ -20,7 +20,9 @@ Open the Calendar XL plugin settings and choose your Google Calendar instance fr
 
 The current implementation uses these plugin fields from [custom-fields.yml](custom-fields.yml):
 
-- Custom title override
+- **Calendar Source** — select your Google Calendar plugin instance from the dropdown
+- **Capitalize Event Text** — optional; displays event names in ALL CAPS (enabled by default)
+- **Demo Mode** — optional; shows synthetic sample events to protect personal data in public previews (enabled by default — turn off once your calendar is connected)
 
 Time format and event formatting come from the merged calendar payload.
 
