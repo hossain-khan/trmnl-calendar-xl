@@ -60,6 +60,30 @@
           {% assign later_count = 0 %}
           {% for event in events %}
             {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
+            {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
+            {% comment %}
+              Eligibility timestamp: determines whether this event should appear in LATER.
+
+              PROBLEM with all_day events: start_full is a bare date ("2026-03-18"), which
+              Liquid's `date: '%s'` parses as midnight UTC. By mid-afternoon local time the
+              UTC clock has already passed that midnight, so start_ts < now_ts and the event
+              silently disappears — even if the event spans multiple future days.
+
+              FIX: for all_day events, use end_ts instead. A multi-day all-day event like
+              "Spring Break" (start: 2026-03-18, end: 2026-03-23) has an end_ts well in
+              the future, so it correctly remains visible until the event is over.
+
+              Timed events (all_day == false) use start_ts as usual — they have a full
+              datetime in start_full (e.g. "2026-03-19T20:00:00.000-04:00") which parses
+              correctly and is only in the past after the event has started.
+            {% endcomment %}
+            {% assign later_eligible_ts = start_ts %}
+            {% if event.all_day %}{% assign later_eligible_ts = end_ts %}{% endif %}
+            {% comment %}
+              Skip events already shown in the hero (primary_event) or NEXT panel
+              (display_next_event) to avoid duplicates. Matched by date_time + summary
+              since there is no unique event ID in the payload.
+            {% endcomment %}
             {% assign is_skip = false %}
             {% if primary_event != blank and event.date_time == primary_event.date_time and event.summary == primary_event.summary %}
               {% assign is_skip = true %}
@@ -67,7 +91,7 @@
             {% if display_next_event != blank and event.date_time == display_next_event.date_time and event.summary == display_next_event.summary %}
               {% assign is_skip = true %}
             {% endif %}
-            {% if start_ts > now_ts and is_skip == false and later_count < later_limit %}
+            {% if later_eligible_ts > now_ts and is_skip == false and later_count < later_limit %}
             <div class="item">
               <div class="meta"></div>
               <div class="content">
