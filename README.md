@@ -8,7 +8,7 @@ Built for TRMNL e-ink displays: big type, strong hierarchy, zero clutter. You kn
 
 ## 🚀 Getting Started
 
-See [GETTING_STARTED.md](GETTING_STARTED.md) for setup instructions.
+Install the 📆 [Calendar XL recipe](https://trmnl.com/recipes/261373) from the TRMNL catalog.
 
 ## 🖥️ Layout Demo
 
