@@ -9,7 +9,6 @@
 {% comment %} === Common setup: available to all layouts === {% endcomment %}
 {% assign calendar = calendar_source %}
 {% assign events = calendar.events %}
-{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: trmnl.plugin_settings.instance_name | default: "Calendar XL" %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
 {% assign later_limit = 3 %}
 {% assign time_pattern = '%-I:%M %p' %}
@@ -17,7 +16,11 @@
   {% assign time_pattern = '%H:%M' %}
 {% endunless %}
 {% assign current_date_label = calendar.today_in_tz | date: calendar.date_format | upcase %}
+{% if current_date_label == blank %}
+  {% assign current_date_label = 'now' | date: '%a, %b %-d' | upcase %}
+{% endif %}
 {% assign current_time_label = 'now' | date: time_pattern %}
+{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: current_date_label %}
 {% assign current_event = blank %}
 {% assign next_event = blank %}
 {% assign secondary_event = blank %}
@@ -59,6 +62,16 @@
 {% if is_free %}
   {% assign display_next_event = secondary_event %}
 {% endif %}
+{% assign title_bar_status = 'FREE' %}
+{% unless is_free %}
+  {% assign title_bar_status = 'BUSY' %}
+{% endunless %}
+{% assign title_bar_status_full = title_bar_status %}
+{% unless is_free %}
+  {% if upcoming_count > 0 %}
+    {% assign title_bar_status_full = 'BUSY · ' | append: upcoming_count | append: ' MORE' %}
+  {% endif %}
+{% endunless %}
 {% comment %} === End common setup === {% endcomment %}
 
 {% template error_state %}
