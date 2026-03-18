@@ -10,9 +10,20 @@
 {% assign calendar = calendar_source %}
 {% assign events = calendar.events %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
-{% comment %} Responsive later_limit: 2 items on small devices in landscape, 3 on portrait or medium+ {% endcomment %}
+{% comment %}
+  Device helpers — derived from trmnl.device.width/height (logical CSS px, matching framework breakpoints).
+    device_size: 'sm' (<800) | 'md' (800–1023) | 'lg' (≥1024)
+    is_portrait:  true when height > width
+  Use these in templates instead of raw dimension comparisons.
+{% endcomment %}
+{% assign device_size = 'sm' %}
+{% if trmnl.device.width >= 800 %}{% assign device_size = 'md' %}{% endif %}
+{% if trmnl.device.width >= 1024 %}{% assign device_size = 'lg' %}{% endif %}
+{% assign is_portrait = false %}
+{% if trmnl.device.height > trmnl.device.width %}{% assign is_portrait = true %}{% endif %}
+{% comment %} lg and portrait keep 3 LATER items; sm/md landscape gets 2 (tighter vertical space) {% endcomment %}
 {% assign later_limit = 3 %}
-{% if trmnl.device.width <= 800 and trmnl.device.width > trmnl.device.height %}
+{% if device_size != 'lg' and is_portrait == false %}
   {% assign later_limit = 2 %}
 {% endif %}
 {% assign time_pattern = '%-I:%M %p' %}
