@@ -10,29 +10,27 @@
 {% assign calendar = calendar_source %}
 
 {% comment %}
-  Demo mode — active by default. Replaces calendar_source with synthetic events
-  so the recipe master never exposes personal calendar data in the public preview.
+  Demo mode — controls whether synthetic sample events are shown.
 
   Logic:
-    - Falls back to demo data automatically when no real calendar is connected
-      (calendar_source is blank), regardless of the demo_mode field value.
-    - Stays on demo data when demo_mode field is absent or any value other than
-      "false" (covers unset, "true", and any other string).
-    - Only switches to real data when demo_mode is explicitly set to "false" AND
-      calendar_source is non-blank (i.e., a calendar plugin is connected).
+    - demo_mode == "true"  → always show demo data (even if a calendar is connected)
+    - demo_mode == "false" → always show real calendar data
+    - demo_mode unset/blank → fall back to demo if no calendar is connected;
+                               show real data if calendar_source is present
 
-  Events are derived from the current render time using Unix-second offsets so that
-  NOW / NEXT / LATER hierarchy resolves correctly whenever the screen is generated:
-    NOW  event  : started 20 min ago, ends in 40 min
-    NEXT event  : starts in 2 h, ends in 3 h
-    LATER events: +5 h / +8 h / +26 h (next day)
-
-  How it works: {% capture %} builds a JSON string with {{ }} interpolations for
-  the computed ISO timestamps, then parse_json turns it into the same object shape
-  that calendar_source provides, so all downstream Liquid logic is unaffected.
+  This lets users with a connected calendar still toggle demo on/off to preview
+  the plugin appearance without exposing personal events.
 {% endcomment %}
-{% assign _demo_off = trmnl.plugin_settings.custom_fields_values.demo_mode | downcase %}
-{% unless _demo_off == "false" or calendar_source != blank %}
+{% assign _demo_val = trmnl.plugin_settings.custom_fields_values.demo_mode | downcase %}
+{% assign _use_demo = false %}
+{% if _demo_val == "true" %}
+  {% assign _use_demo = true %}
+{% elsif _demo_val == "false" %}
+  {% assign _use_demo = false %}
+{% elsif calendar_source == blank %}
+  {% assign _use_demo = true %}
+{% endif %}
+{% if _use_demo %}
   {% assign _ns  = 'now' | date: '%s' | plus: 0 %}
   {% assign _e1s = _ns | minus: 1200  %}{% assign _e1e = _ns | plus: 2400  %}
   {% assign _e2s = _ns | plus: 7200   %}{% assign _e2e = _ns | plus: 10800 %}
@@ -47,7 +45,7 @@
     {"summary":"Dinner Reservation","all_day":false,"status":"confirmed","calname":"Personal","start":"{{ _e5s | date: '%-I:%M %p' }}","end":"{{ _e5e | date: '%-I:%M %p' }}","start_full":"{{ _e5s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e5e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e5s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"The Grand Table","description":""}
   ],"time_format":"am/pm","today_in_tz":"now"}{% endcapture %}
   {% assign calendar = _demo_json | parse_json %}
-{% endunless %}
+{% endif %}
 {% assign events = calendar.events %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
 {% comment %}
