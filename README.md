@@ -1,3 +1,5 @@
+[![Connections](https://trmnl-badges.gohk.xyz/badge/connections?recipe=261373)](https://trmnl.com/recipes/261373) [![Installs](https://trmnl-badges.gohk.xyz/badge/installs?recipe=261373)](https://trmnl.com/recipes/261373) [![Forks](https://trmnl-badges.gohk.xyz/badge/forks?recipe=261373)](https://trmnl.com/recipes/261373)
+
 # Calendar XL 📅
 
 Same old calendar, but XL. **NOW** front and center, **NEXT** at a glance, **LATER** in the wings — readable from across the room. No squinting required.
