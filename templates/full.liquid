@@ -77,7 +77,7 @@
               <div class="content">
                 <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{{ event.summary | upcase }}</span>
                 {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
-                <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %} · {{ event_date_label }}</span>
+                <span class="label label--small lg:label--base lg:label--outline">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %} · {{ event_date_label }}</span>
               </div>
             </div>
             {% assign later_count = later_count | plus: 1 %}
