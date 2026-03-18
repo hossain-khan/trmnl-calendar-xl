@@ -2,8 +2,8 @@
   field_type: "plugin_instance_select"
   name: "Calendar Source"
   plugin_keyname: "google_calendar"
-  description: "Select the Google Calendar plugin instance to merge events from"
-  help_text: "Only Google Calendar plugins active in a playlist are shown. Hide the native plugin in your playlist to use it here."
+  description: "Choose the Google Calendar that provides your primary calendar events."
+  help_text: "Add a <b>Google Calendar</b> plugin to a playlist first (you can hide it to save a screen slot). It will then appear here."
 
 - keyname: "capitalize_text"
   field_type: "boolean"
