@@ -21,9 +21,11 @@
 {% if trmnl.device.width >= 1024 %}{% assign device_size = 'lg' %}{% endif %}
 {% assign is_portrait = false %}
 {% if trmnl.device.height > trmnl.device.width %}{% assign is_portrait = true %}{% endif %}
-{% comment %} lg and portrait keep 3 LATER items; sm/md landscape gets 2 (tighter vertical space) {% endcomment %}
+{% comment %} later_limit: portrait md/lg=4, lg landscape=3, sm/md landscape=2 {% endcomment %}
 {% assign later_limit = 3 %}
-{% if device_size != 'lg' and is_portrait == false %}
+{% if is_portrait and device_size != 'sm' %}
+  {% assign later_limit = 4 %}
+{% elsif device_size != 'lg' and is_portrait == false %}
   {% assign later_limit = 2 %}
 {% endif %}
 {% assign time_pattern = '%-I:%M %p' %}
