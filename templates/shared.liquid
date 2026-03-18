@@ -20,7 +20,7 @@
   {% assign current_date_label = 'now' | date: '%a, %b %-d' | upcase %}
 {% endif %}
 {% assign current_time_label = 'now' | date: time_pattern %}
-{% assign plugin_title = trmnl.plugin_settings.custom_fields_values.custom_title | default: current_date_label %}
+{% assign plugin_title = current_date_label %}
 {% assign current_event = blank %}
 {% assign next_event = blank %}
 {% assign secondary_event = blank %}

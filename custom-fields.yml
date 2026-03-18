@@ -5,9 +5,3 @@
   description: "Select the Google Calendar plugin instance to merge events from"
   help_text: "Only Google Calendar plugins active in a playlist are shown. Hide the native plugin in your playlist to use it here."
 
-- keyname: "custom_title"
-  field_type: "string"
-  name: "Custom Plugin Title"
-  placeholder: "Calendar XL"
-  optional: true
-  description: "Overrides the title bar; leave blank to use the TRMNL instance name"
