@@ -43,7 +43,8 @@
       {% comment %} --- NEXT panel --- {% endcomment %}
       <div class="outline rounded--large p--2 flex flex--col gap--small">
 
-        {% render "section_label", text: "NEXT", meta: current_date_label, inverted: true %}
+        {% assign next_event_date_label = display_next_event.start_full | date: '%a, %b %-d' | upcase %}
+        {% render "section_label", text: "NEXT", meta: next_event_date_label, inverted: true %}
 
         {% if display_next_event != blank %}
         <div class="value md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ next_event_display }}</div>
