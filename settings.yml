@@ -8,7 +8,7 @@ layouts:
   - quadrant
 
 name: "Calendar XL"
-description: "A glanceable Now / Next / Later agenda optimized for TRMNL displays."
+description: "Same old calendar, but XL. NOW front and center, NEXT at a glance, LATER in the wings — readable from across the room."
 author: "Hossain Khan"
 version: "1.0.0"
 tap_action_url: ""

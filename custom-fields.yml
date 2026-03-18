@@ -5,10 +5,9 @@
   github_url: "https://github.com/hossain-khan/trmnl-calendar-xl"
   email_address: "trmnl@hossain.dev"
   description: >-
-    Calendar XL shows your day at a glance — current event front and center,
-    what's coming next, and a short list of later items. Built around a
-    Now / Next / Later hierarchy with distance-readable typography, so you
-    can tell where you are in your day without picking up your phone.
+    Same calendar you know, now in XL — big enough to read from your desk,
+    the couch, or across the room. See what's happening NOW, what's up NEXT,
+    and a peek at what's LATER. No squinting required.
     Requires a native Google Calendar plugin connected via Plugin Merge.
 
 - keyname: "calendar_source"
