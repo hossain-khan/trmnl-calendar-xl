@@ -6,11 +6,14 @@
     {% comment %} ============================================================
       TOP ROW — NOW/NEXT hero (~67% of layout height)
       Four <span data-value-fit> for device + orientation combinations:
-        block portrait:hidden lg:hidden      → md landscape (TRMNL OG),      fit_height 200
-        hidden portrait:block lg:hidden      → md portrait  (TRMNL OG),      fit_height 120
-          ↑ Smaller budget prevents the fitted text overflowing the narrower portrait width.
-        hidden lg:block lg:portrait:hidden   → lg landscape (TRMNL X),       fit_height 370
-        hidden lg:portrait:block             → lg portrait  (TRMNL X),       fit_height 280
+        block portrait:hidden lg:hidden                  → md landscape (TRMNL OG),      fit_height 200
+        hidden portrait:block lg:hidden lg:portrait:hidden → md portrait (TRMNL OG),     fit_height 120
+          ↑ lg:portrait:hidden is required: portrait:block fires on ALL portrait sizes
+            including lg, and it overrides lg:hidden due to CSS cascade order in the
+            framework stylesheet. The compound query lg:portrait:hidden has higher
+            specificity and definitively hides this span on lg portrait devices.
+        hidden lg:block lg:portrait:hidden               → lg landscape (TRMNL X),       fit_height 370
+        hidden lg:portrait:block                         → lg portrait  (TRMNL X),       fit_height 280
     ============================================================ {% endcomment %}
     <div class="rounded--large p--2 flex flex--col gap--small h--[67cqh] text--white bg--black">
 
@@ -20,7 +23,7 @@
       <span class="value value--xxxlarge block portrait:hidden lg:hidden"
             data-value-fit="true"
             data-value-fit-max-height="200">{{ primary_event_display }}</span>
-      <span class="value value--xxxlarge hidden portrait:block lg:hidden"
+      <span class="value value--xxxlarge hidden portrait:block lg:hidden lg:portrait:hidden"
             data-value-fit="true"
             data-value-fit-max-height="120">{{ primary_event_display }}</span>
       <span class="value value--xxxlarge hidden lg:block lg:portrait:hidden"
@@ -28,7 +31,7 @@
             data-value-fit-max-height="370">{{ primary_event_display }}</span>
       <span class="value value--xxxlarge hidden lg:portrait:block"
             data-value-fit="true"
-            data-value-fit-max-height="280">{{ primary_event_display }}</span>
+            data-value-fit-max-height="220">{{ primary_event_display }}</span>
       {% else %}
       <div class="value value--xxxlarge">FREE</div>
       <div class="description">Nothing scheduled today</div>
