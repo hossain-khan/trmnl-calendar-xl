@@ -13,7 +13,7 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) for setup instructions.
 ## 🖥️ Layout Demo
 
 | Full | Half Horizontal |
-|---|---|
+|:---:|:---:|
 | ![Full layout](assets/demo/preview-full.png) | ![Half Horizontal layout](assets/demo/preview-half-horizontal.png) |
 | **Half Vertical** | **Quadrant** |
 | ![Half Vertical layout](assets/demo/preview-half-vertical.png) | ![Quadrant layout](assets/demo/preview-quadrant.png) |
