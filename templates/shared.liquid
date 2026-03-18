@@ -96,6 +96,20 @@
 {% endif %}
 {% comment %} === End common setup === {% endcomment %}
 
+{% comment %}
+  Template: error_state
+  Description: Renders a centered error/setup message when the calendar plugin is
+               not connected or data is unavailable. Scales to the three layout sizes.
+  Parameters:
+  - size  {string}  Layout size bucket. Required. One of:
+                    'full'     — full-screen layout
+                    'half'     — half-horizontal or half-vertical layout
+                    'quadrant' — quarter-size layout
+  Usage:
+    {% render "shared", template_name: "error_state", size: "full" %}
+    {% render "shared", template_name: "error_state", size: "half" %}
+    {% render "shared", template_name: "error_state", size: "quadrant" %}
+{% endcomment %}
 {% template error_state %}
 {% if size == 'full' %}
 <div class="flex flex--col flex--center-x flex--center-y gap--medium h--full text--center">
@@ -119,6 +133,22 @@
 {% endif %}
 {% endtemplate %}
 
+{% comment %}
+  Template: section_label
+  Description: Renders a horizontal label row used as a section header.
+               Left side shows the primary label; right side shows optional metadata.
+               Supports normal (underline) and inverted (filled) visual styles.
+  Parameters:
+  - text     {string}   Label text to display on the left. Required.
+  - meta     {string}   Optional secondary text displayed on the right.
+                        Pass blank or omit to hide the right slot.
+  - inverted {boolean}  When truthy, applies label--inverted styling (filled pill).
+                        Omit or pass false for the default label--underline style.
+  Usage:
+    {% render "shared", template_name: "section_label", text: "NOW" %}
+    {% render "shared", template_name: "section_label", text: "LATER", meta: "3 events" %}
+    {% render "shared", template_name: "section_label", text: "NOW", inverted: true %}
+{% endcomment %}
 {% template section_label %}
 <div class="flex flex--row flex--between flex--center-y gap--xsmall">
   <span class="label lg:label--large {% if inverted %}label--inverted{% else %}label--underline{% endif %}">{{ text }}</span>
@@ -129,6 +159,22 @@
 {% endtemplate %}
 
 
+{% comment %}
+  Template: title_bar
+  Description: Renders the standard TRMNL title bar with a title and an optional
+               instance/status slot. Replaces the built-in title_bar element so all
+               layouts share identical markup and can pass dynamic values.
+  Parameters:
+  - title    {string}  Primary text shown in the title slot. Required.
+                       Typically current_date_label (e.g. "TUE, MAR 18").
+  - instance {string}  Optional status text shown in the instance slot.
+                       Typically title_bar_status or title_bar_status_full
+                       (e.g. "FREE NOW", "BUSY", "BUSY · 2 MORE").
+                       Pass blank or omit to hide the instance slot.
+  Usage:
+    {% render "shared", template_name: "title_bar", title: current_date_label %}
+    {% render "shared", template_name: "title_bar", title: current_date_label, instance: title_bar_status_full %}
+{% endcomment %}
 {% template title_bar %}
 <div class="title_bar">
   <span class="title">{{ title }}</span>
