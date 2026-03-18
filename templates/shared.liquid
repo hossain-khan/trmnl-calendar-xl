@@ -15,6 +15,7 @@
     device_size: 'sm' (<800) | 'md' (800–1023) | 'lg' (≥1024)
     is_portrait:  true when height > width
   Use these in templates instead of raw dimension comparisons.
+  See: https://trmnl.com/api/models
 {% endcomment %}
 {% assign device_size = 'sm' %}
 {% if trmnl.device.width >= 800 %}{% assign device_size = 'md' %}{% endif %}

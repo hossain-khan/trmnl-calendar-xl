@@ -10,4 +10,4 @@
   name: "Capitalize Event Text"
   description: "Display event names in ALL CAPS"
   optional: true
-
+  default: false
