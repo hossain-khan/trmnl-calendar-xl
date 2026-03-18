@@ -69,6 +69,13 @@
     {% assign title_bar_status_full = 'BUSY · ' | append: upcoming_count | append: ' MORE' %}
   {% endif %}
 {% endunless %}
+{% comment %} Capitalize events by default; turn off by setting capitalize_text to false {% endcomment %}
+{% assign primary_event_display = primary_event.summary | upcase %}
+{% assign next_event_display = display_next_event.summary | upcase %}
+{% if trmnl.plugin_settings.custom_fields_values.capitalize_text == "false" %}
+  {% assign primary_event_display = primary_event.summary %}
+  {% assign next_event_display = display_next_event.summary %}
+{% endif %}
 {% comment %} === End common setup === {% endcomment %}
 
 {% template error_state %}
