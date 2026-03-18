@@ -5,10 +5,11 @@
   github_url: "https://github.com/hossain-khan/trmnl-calendar-xl"
   email_address: "trmnl@hossain.dev"
   description: >-
-    Same calendar you know, now in XL — big enough to read from your desk,
+    Same calendar you know, now in XL - big enough to read from your desk,
     the couch, or across the room. See what's happening NOW, what's up NEXT,
     and a peek at what's LATER. No squinting required.
-    Requires a native Google Calendar plugin connected via Plugin Merge.
+    <br><br>
+    ℹ️ Requires a native Google Calendar plugin connected and added in playlist for fresh data.
 
 - keyname: "calendar_source"
   field_type: "plugin_instance_select"
