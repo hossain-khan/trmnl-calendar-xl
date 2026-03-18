@@ -36,6 +36,7 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) for setup instructions.
 - [TRMNL Framework](https://trmnl.com/framework)
 - [Plugin Guides](https://help.trmnl.com/en/collections/7820559-plugin-guides)
 - [Device Models](https://trmnl.com/api/models)
+- [Plugin Data using Plugin Merge](https://docs.trmnl.com/go/private-api/plugin-data)
 
 ## 🤝 Contributing
 
