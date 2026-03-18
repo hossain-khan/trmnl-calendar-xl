@@ -21,13 +21,13 @@
       {% if primary_event != blank %}
       <span class="value value--xxxlarge block lg:hidden"
             data-value-fit="true"
-            data-value-fit-max-height="150">{{ primary_event_display }}</span>
+            data-value-fit-max-height="150">{{ primary_event.summary | upcase }}</span>
       <span class="value value--xxxlarge hidden lg:block lg:portrait:hidden"
             data-value-fit="true"
-            data-value-fit-max-height="320">{{ primary_event_display }}</span>
+            data-value-fit-max-height="320">{{ primary_event.summary | upcase }}</span>
       <span class="value value--xxxlarge hidden lg:portrait:block"
             data-value-fit="true"
-            data-value-fit-max-height="480">{{ primary_event_display }}</span>
+            data-value-fit-max-height="480">{{ primary_event.summary | upcase }}</span>
       {% else %}
       <div class="value value--xxxlarge">FREE</div>
       <div class="title title--small">No events today</div>
@@ -46,7 +46,7 @@
         {% render "section_label", text: "NEXT", meta: current_date_label, inverted: true %}
 
         {% if display_next_event != blank %}
-        <div class="value md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ next_event_display }}</div>
+        <div class="value md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ display_next_event.summary | upcase }}</div>
         <div class="value value--small md:value--medium lg:value">{{ display_next_event.start }} – {{ display_next_event.end }}</div>
         {% else %}
         <div class="title title--small">CLEAR</div>
@@ -75,7 +75,7 @@
             <div class="item">
               <div class="meta"></div>
               <div class="content">
-                <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{% if capitalize_events != "false" %}{{ event.summary | upcase }}{% else %}{{ event.summary }}{% endif %}</span>
+                <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{{ event.summary | upcase }}</span>
                 {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
                 <span class="label label--small">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %} · {{ event_date_label }}</span>
               </div>

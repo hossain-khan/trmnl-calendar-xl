@@ -18,10 +18,10 @@
       {% if primary_event != blank %}
       <span class="value value--xxxlarge block lg:hidden"
             data-value-fit="true"
-            data-value-fit-max-height="200">{{ primary_event_display }}</span>
+            data-value-fit-max-height="200">{{ primary_event.summary | upcase }}</span>
       <span class="value value--xxxlarge hidden lg:block"
             data-value-fit="true"
-            data-value-fit-max-height="370">{{ primary_event_display }}</span>
+            data-value-fit-max-height="370">{{ primary_event.summary | upcase }}</span>
       {% else %}
       <div class="value value--xxxlarge">FREE</div>
       <div class="description">Nothing scheduled today</div>
@@ -37,7 +37,7 @@
       {% render "section_label", text: "NEXT", inverted: false %}
 
       {% if display_next_event != blank %}
-      <div class="value value--xsmall md:value--small lg:value--base" data-clamp="2">{{ next_event_display }}</div>
+      <div class="value value--xsmall md:value--small lg:value--base" data-clamp="2">{{ display_next_event.summary | upcase }}</div>
       <div class="value md:value--xsmall lg:value--medium">{{ display_next_event.start }} – {{ display_next_event.end }}</div>
       {% else %}
       <div class="title title--small">CLEAR</div>
