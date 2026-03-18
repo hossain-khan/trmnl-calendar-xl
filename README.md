@@ -10,14 +10,13 @@ Built for TRMNL e-ink displays: big type, strong hierarchy, zero clutter. You kn
 
 See [GETTING_STARTED.md](GETTING_STARTED.md) for setup instructions.
 
-## 🖥️ Layouts
+## 🖥️ Layout Demo
 
-| Layout | Description |
+| Full | Half Horizontal |
 |---|---|
-| **Full** | NOW hero dominates the top, NEXT and LATER panels below |
-| **Half Horizontal** | NOW/NEXT hero on the left, NEXT panel on the right |
-| **Half Vertical** | NOW/NEXT hero on top, NEXT panel below |
-| **Quadrant** | Single full-height NOW or NEXT hero — most compact |
+| ![Full layout](assets/demo/preview-full.png) | ![Half Horizontal layout](assets/demo/preview-half-horizontal.png) |
+| **Half Vertical** | **Quadrant** |
+| ![Half Vertical layout](assets/demo/preview-half-vertical.png) | ![Quadrant layout](assets/demo/preview-quadrant.png) |
 
 ## 🎛️ Plugin Settings
 
