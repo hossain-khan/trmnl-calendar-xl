@@ -134,6 +134,38 @@
   {% assign primary_event_display = primary_event.summary %}
   {% assign next_event_display = display_next_event.summary %}
 {% endif %}
+{% comment %}
+  Smart time/date labels for the hero and NEXT panels.
+  Compares the event date against today (derived from calendar.today_in_tz):
+    Same day  → "12:00 PM – 1:00 PM"   (time range, as before)
+    Diff day  → "MAR 19 AT 12:00 PM"   (date + start time, no end time)
+    All-day   → "MAR 20"               (date only; defensive — all-day events are
+                                         filtered out of next_event/display_next_event)
+  These replace the hard-coded `start – end` expressions in every layout template.
+{% endcomment %}
+{% assign _today_ymd = _date_src | date: '%Y-%m-%d' %}
+{% assign _primary_ymd = primary_event.start_full | date: '%Y-%m-%d' %}
+{% if primary_event == blank %}
+  {% assign primary_event_time_label = blank %}
+{% elsif _primary_ymd == _today_ymd %}
+  {% assign primary_event_time_label = primary_event.start | append: ' – ' | append: primary_event.end %}
+{% else %}
+  {% assign _pd = primary_event.start_full | date: '%b %-d' | upcase %}
+  {% assign primary_event_time_label = _pd | append: ' AT ' | append: primary_event.start %}
+{% endif %}
+{% assign _next_ymd = display_next_event.start_full | date: '%Y-%m-%d' %}
+{% if display_next_event == blank %}
+  {% assign next_event_time_label = blank %}
+{% elsif _next_ymd == _today_ymd %}
+  {% assign next_event_time_label = display_next_event.start | append: ' – ' | append: display_next_event.end %}
+{% else %}
+  {% assign _nd = display_next_event.start_full | date: '%b %-d' | upcase %}
+  {% if display_next_event.all_day %}
+    {% assign next_event_time_label = _nd %}
+  {% else %}
+    {% assign next_event_time_label = _nd | append: ' AT ' | append: display_next_event.start %}
+  {% endif %}
+{% endif %}
 {% comment %} === End common setup === {% endcomment %}
 
 {% comment %}

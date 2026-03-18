@@ -9,11 +9,7 @@
         hidden lg:block lg:portrait:hidden   → lg landscape (TRMNL X),  fit_height 320
         hidden lg:portrait:block             → lg portrait  (TRMNL X),  fit_height 480
     ============================================================ {% endcomment %}
-    {% if primary_event != blank %}
-      {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
-    {% else %}
-      {% assign hero_meta = blank %}
-    {% endif %}
+    {% assign hero_meta = primary_event_time_label %}
     <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] text--white bg--black">
 
       {% render "section_label", text: primary_label, meta: hero_meta, inverted: true %}
@@ -43,12 +39,11 @@
       {% comment %} --- NEXT panel --- {% endcomment %}
       <div class="outline rounded--large p--2 flex flex--col gap--small">
 
-        {% assign next_event_date_label = display_next_event.start_full | date: '%a, %b %-d' | upcase %}
-        {% render "section_label", text: "NEXT", meta: next_event_date_label, inverted: true %}
+        {% render "section_label", text: "NEXT", inverted: true %}
 
         {% if display_next_event != blank %}
         <div class="value md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ next_event_display }}</div>
-        <div class="value value--small md:value--medium lg:value">{{ display_next_event.start }} – {{ display_next_event.end }}</div>
+        <div class="value value--small md:value--medium lg:value">{{ next_event_time_label }}</div>
         {% else %}
         <div class="title title--small">CLEAR</div>
         <div class="description">No timed events after this.</div>

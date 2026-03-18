@@ -1,10 +1,6 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
-  {% if primary_event != blank %}
-    {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
-  {% else %}
-    {% assign hero_meta = blank %}
-  {% endif %}
+  {% assign hero_meta = primary_event_time_label %}
 
   {% comment %} ============================================================
     Single full-height hero — NOW or NEXT.

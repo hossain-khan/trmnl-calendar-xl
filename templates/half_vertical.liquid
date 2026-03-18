@@ -1,10 +1,6 @@
 <div class="layout">
   {% if calendar != blank and events != blank %}
-  {% if primary_event != blank %}
-    {% assign hero_meta = primary_event.start | append: " – " | append: primary_event.end %}
-  {% else %}
-    {% assign hero_meta = blank %}
-  {% endif %}
+  {% assign hero_meta = primary_event_time_label %}
   <div class="flex flex--col gap--small h--full">
 
     {% comment %} ============================================================
@@ -38,7 +34,7 @@
 
       {% if display_next_event != blank %}
       <div class="value value--xsmall md:value--small lg:value--base" data-clamp="2">{{ next_event_display }}</div>
-      <div class="value md:value--xsmall lg:value--medium">{{ display_next_event.start }} – {{ display_next_event.end }}</div>
+      <div class="value md:value--xsmall lg:value--medium">{{ next_event_time_label }}</div>
       {% else %}
       <div class="title title--small">CLEAR</div>
       {% endif %}
