@@ -8,6 +8,38 @@
 
 {% comment %} === Common setup: available to all layouts === {% endcomment %}
 {% assign calendar = calendar_source %}
+
+{% comment %}
+  Demo mode — when enabled, replaces calendar_source with synthetic events so the
+  recipe master never exposes personal calendar data in the public plugin preview.
+  Enable via the "Demo Mode" custom field on the recipe master instance.
+
+  Events are derived from the current render time using Unix-second offsets so that
+  NOW / NEXT / LATER hierarchy resolves correctly whenever the screen is generated:
+    NOW  event  : started 20 min ago, ends in 40 min
+    NEXT event  : starts in 2 h, ends in 3 h
+    LATER events: +5 h / +8 h / +26 h (next day)
+
+  How it works: {% capture %} builds a JSON string with {{ }} interpolations for
+  the computed ISO timestamps, then parse_json turns it into the same object shape
+  that calendar_source provides, so all downstream Liquid logic is unaffected.
+{% endcomment %}
+{% if trmnl.plugin_settings.custom_fields_values.demo_mode == "true" %}
+  {% assign _ns  = 'now' | date: '%s' | plus: 0 %}
+  {% assign _e1s = _ns | minus: 1200  %}{% assign _e1e = _ns | plus: 2400  %}
+  {% assign _e2s = _ns | plus: 7200   %}{% assign _e2e = _ns | plus: 10800 %}
+  {% assign _e3s = _ns | plus: 18000  %}{% assign _e3e = _ns | plus: 21600 %}
+  {% assign _e4s = _ns | plus: 28800  %}{% assign _e4e = _ns | plus: 32400 %}
+  {% assign _e5s = _ns | plus: 93600  %}{% assign _e5e = _ns | plus: 97200 %}
+  {% capture _demo_json %}{"events":[
+    {"summary":"Team Standup","all_day":false,"status":"confirmed","calname":"Work Calendar","start":"{{ _e1s | date: '%-I:%M %p' }}","end":"{{ _e1e | date: '%-I:%M %p' }}","start_full":"{{ _e1s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e1e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e1s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Conference Room B","description":""},
+    {"summary":"Product Review","all_day":false,"status":"confirmed","calname":"Work Calendar","start":"{{ _e2s | date: '%-I:%M %p' }}","end":"{{ _e2e | date: '%-I:%M %p' }}","start_full":"{{ _e2s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e2e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e2s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Meeting Room 2","description":""},
+    {"summary":"Fitness Class","all_day":false,"status":"confirmed","calname":"Personal","start":"{{ _e3s | date: '%-I:%M %p' }}","end":"{{ _e3e | date: '%-I:%M %p' }}","start_full":"{{ _e3s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e3e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e3s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Downtown Fitness Studio","description":""},
+    {"summary":"Parent-Teacher Meeting","all_day":false,"status":"confirmed","calname":"Family","start":"{{ _e4s | date: '%-I:%M %p' }}","end":"{{ _e4e | date: '%-I:%M %p' }}","start_full":"{{ _e4s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e4e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e4s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"School Main Office","description":""},
+    {"summary":"Dinner Reservation","all_day":false,"status":"confirmed","calname":"Personal","start":"{{ _e5s | date: '%-I:%M %p' }}","end":"{{ _e5e | date: '%-I:%M %p' }}","start_full":"{{ _e5s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e5e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e5s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"The Grand Table","description":""}
+  ],"time_format":"am/pm","today_in_tz":"now"}{% endcapture %}
+  {% assign calendar = _demo_json | parse_json %}
+{% endif %}
 {% assign events = calendar.events %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
 {% comment %}

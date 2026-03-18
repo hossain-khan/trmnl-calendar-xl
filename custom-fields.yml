@@ -11,3 +11,10 @@
   description: "Display event names in ALL CAPS"
   optional: true
   default: false
+
+- keyname: "demo_mode"
+  field_type: "boolean"
+  name: "Demo Mode"
+  description: "Shows sample events instead of your real calendar. Enabled by default to prevent personal data from appearing in the public plugin preview."
+  optional: true
+  default: true
