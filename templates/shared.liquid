@@ -15,10 +15,8 @@
 {% unless calendar.time_format == 'am/pm' %}
   {% assign time_pattern = '%H:%M' %}
 {% endunless %}
-{% assign current_date_label = calendar.today_in_tz | date: calendar.date_format | upcase %}
-{% if current_date_label == blank %}
-  {% assign current_date_label = 'now' | date: '%a, %b %-d' | upcase %}
-{% endif %}
+{% assign _date_src = calendar.today_in_tz | default: 'now' %}
+{% assign current_date_label = _date_src | date: '%a, %b %-d' | upcase %}
 {% assign current_time_label = 'now' | date: time_pattern %}
 {% assign current_event = blank %}
 {% assign next_event = blank %}
