@@ -47,8 +47,8 @@
       {% render "section_label", text: "NEXT", inverted: false %}
 
       {% if display_next_event != blank %}
-      <div class="value value--xsmall md:value--small lg:value--base" data-clamp="2">{{ next_event_display }}</div>
-      <div class="value md:value--xsmall lg:value--medium">{{ next_event_time_label }}</div>
+      <div class="value text--center value--xsmall md:value--small lg:value--base" data-clamp="2">{{ next_event_display }}</div>
+      <div class="value text--center md:value--xsmall lg:value--medium">{{ next_event_time_label }}</div>
       {% else %}
       <div class="title title--small">CLEAR</div>
       {% endif %}

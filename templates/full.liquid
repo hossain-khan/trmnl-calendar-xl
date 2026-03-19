@@ -42,8 +42,8 @@
         {% render "section_label", text: "NEXT", inverted: true %}
 
         {% if display_next_event != blank %}
-        <div class="value md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ next_event_display }}</div>
-        <div class="value value--small md:value--medium lg:value">{{ next_event_time_label }}</div>
+        <div class="value text--center md:portrait:value--small lg:value--large lg:portrait:value--large" data-clamp="2">{{ next_event_display }}</div>
+        <div class="value text--center value--small md:value--medium lg:value">{{ next_event_time_label }}</div>
         {% else %}
         <div class="title title--small">CLEAR</div>
         <div class="description">No timed events after this.</div>
