@@ -28,7 +28,10 @@
 - keyname: "show_all_day_events"
   field_type: "boolean"
   name: "Show All-Day Events"
-  description: "Display active all-day events in a dedicated section (trips, holidays, observances)"
+  description: |
+    When enabled, displays active all-day events (trips, holidays, birthdays)
+    in a dedicated section. When disabled, shows more future timed events
+    from your calendar.
   optional: true
   default: false
 
