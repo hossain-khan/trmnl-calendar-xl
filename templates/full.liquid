@@ -62,18 +62,23 @@
 
         <div class="flex flex--col gap--xsmall lg:gap--small">
           {% if should_show_all_day %}
-          {% comment %} Show active all-day events {% endcomment %}
+          {% comment %} Show active all-day events (filter from events array) {% endcomment %}
           {% assign all_day_count = 0 %}
-          {% for event in active_all_day_events %}
-            {% assign all_day_count = all_day_count | plus: 1 %}
-            <div class="item">
-              <div class="meta"></div>
-              <div class="content">
-                <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{% if trmnl.plugin_settings.custom_fields_values.capitalize_text == "false" %}{{ event.summary }}{% else %}{{ event.summary | upcase }}{% endif %}</span>
-                {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
-                <span class="label label--small lg:label--base lg:label--outline">{{ event_date_label }}</span>
-              </div>
-            </div>
+          {% for event in events %}
+            {% if event.all_day %}
+              {% assign event_end_ts = event.end_full | date: '%s' | plus: 0 %}
+              {% if event_end_ts > now_ts %}
+                {% assign all_day_count = all_day_count | plus: 1 %}
+                <div class="item">
+                  <div class="meta"></div>
+                  <div class="content">
+                    <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{% if trmnl.plugin_settings.custom_fields_values.capitalize_text == "false" %}{{ event.summary }}{% else %}{{ event.summary | upcase }}{% endif %}</span>
+                    {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
+                    <span class="label label--small lg:label--base lg:label--outline">{{ event_date_label }}</span>
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
           {% endfor %}
           {% else %}
           {% comment %} Show future timed events (filter out all-day) {% endcomment %}

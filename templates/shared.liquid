@@ -118,14 +118,14 @@
 {% if trmnl.plugin_settings.custom_fields_values.show_all_day_events == "true" %}
   {% assign show_all_day_events_enabled = true %}
 {% endif %}
-{% assign active_all_day_events = "" | split: "" %}
+
+{% comment %} Check if there are any active all-day events {% endcomment %}
 {% assign has_active_all_day = false %}
 {% if show_all_day_events_enabled %}
   {% for event in events %}
     {% if event.all_day %}
       {% assign event_end_ts = event.end_full | date: '%s' | plus: 0 %}
       {% if event_end_ts > now_ts %}
-        {% assign active_all_day_events = active_all_day_events | push: event %}
         {% assign has_active_all_day = true %}
       {% endif %}
     {% endif %}
