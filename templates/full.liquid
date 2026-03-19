@@ -73,8 +73,9 @@
                   <div class="meta"></div>
                   <div class="content">
                     <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{% if trmnl.plugin_settings.custom_fields_values.capitalize_text == "false" %}{{ event.summary }}{% else %}{{ event.summary | upcase }}{% endif %}</span>
-                    {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
-                    <span class="label label--small lg:label--base lg:label--outline">{{ event_date_label }}</span>
+                    {% assign event_start_date = event.start_full | date: '%b %-d' | upcase %}
+                    {% assign event_end_date = event.end_full | date: '%b %-d' | upcase %}
+                    <span class="label label--small lg:label--base lg:label--outline">{{ event_start_date }} – {{ event_end_date }}</span>
                   </div>
                 </div>
               {% endif %}
