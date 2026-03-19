@@ -32,13 +32,19 @@
 {% endif %}
 {% if _use_demo %}
   {% assign _ns  = 'now' | date: '%s' | plus: 0 %}
-  {% assign _e1s = _ns | minus: 1200  %}{% assign _e1e = _ns | plus: 2400  %}
+  {% assign _e1s = _ns | minus: 1200  %}
+  {% assign _e1e = _ns | plus: 2400  %}
+  {% assign _e1b = _ns  %}
+  {% assign _e1b_e = _ns | plus: 1800  %}
+  {% assign _e1c = _ns | plus: 600  %}{% assign _e1c_e = _ns | plus: 3600  %}
   {% assign _e2s = _ns | plus: 7200   %}{% assign _e2e = _ns | plus: 10800 %}
   {% assign _e3s = _ns | plus: 18000  %}{% assign _e3e = _ns | plus: 21600 %}
   {% assign _e4s = _ns | plus: 28800  %}{% assign _e4e = _ns | plus: 32400 %}
   {% assign _e5s = _ns | plus: 93600  %}{% assign _e5e = _ns | plus: 97200 %}
   {% capture _demo_json %}{"events":[
     {"summary":"Team Standup","all_day":false,"status":"confirmed","calname":"Work Calendar","start":"{{ _e1s | date: '%-I:%M %p' }}","end":"{{ _e1e | date: '%-I:%M %p' }}","start_full":"{{ _e1s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e1e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e1s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Conference Room B","description":""},
+    {"summary":"1:1 Meeting","all_day":false,"status":"confirmed","calname":"Work Calendar","start":"{{ _e1b | date: '%-I:%M %p' }}","end":"{{ _e1b_e | date: '%-I:%M %p' }}","start_full":"{{ _e1b | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e1b_e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e1b | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Office","description":""},
+    {"summary":"Design Review","all_day":false,"status":"confirmed","calname":"Work Calendar","start":"{{ _e1c | date: '%-I:%M %p' }}","end":"{{ _e1c_e | date: '%-I:%M %p' }}","start_full":"{{ _e1c | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e1c_e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e1c | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Meeting Room 1","description":""},
     {"summary":"Calendar XL: Product Review","all_day":false,"status":"confirmed","calname":"Work Calendar","start":"{{ _e2s | date: '%-I:%M %p' }}","end":"{{ _e2e | date: '%-I:%M %p' }}","start_full":"{{ _e2s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e2e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e2s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Meeting Room 2","description":""},
     {"summary":"Fitness Class and Training","all_day":false,"status":"confirmed","calname":"Personal","start":"{{ _e3s | date: '%-I:%M %p' }}","end":"{{ _e3e | date: '%-I:%M %p' }}","start_full":"{{ _e3s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","end_full":"{{ _e3e | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","date_time":"{{ _e3s | date: '%Y-%m-%dT%H:%M:%S.000+00:00' }}","location":"Downtown Fitness Studio","description":""},
     {"summary":"Spring Break","all_day":true,"status":"confirmed","calname":"Personal","start":"{{ _ns | date: '%Y-%m-%d' }}","end":"{{ _ns | plus: 259200 | date: '%Y-%m-%d' }}","start_full":"{{ _ns | date: '%Y-%m-%d' }}","end_full":"{{ _ns | plus: 259200 | date: '%Y-%m-%d' }}","date_time":"{{ _ns | date: '%Y-%m-%d' }}","location":"","description":""},
@@ -82,6 +88,7 @@
 {% assign next_event = blank %}
 {% assign secondary_event = blank %}
 {% assign upcoming_count = 0 %}
+{% assign concurrent_event_count = 0 %}
 {% for event in events %}
   {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
   {% assign end_ts = event.end_full | date: '%s' | plus: 0 %}
@@ -99,6 +106,19 @@
     {% endif %}
   {% endunless %}
 {% endfor %}
+
+{% comment %} Count how many events are happening at the same time as current_event {% endcomment %}
+{% if current_event != blank %}
+  {% assign current_start = current_event.start_full | date: '%s' | plus: 0 %}
+  {% assign current_end = current_event.end_full | date: '%s' | plus: 0 %}
+  {% for event in events %}
+    {% assign event_start = event.start_full | date: '%s' | plus: 0 %}
+    {% assign event_end = event.end_full | date: '%s' | plus: 0 %}
+    {% if event_start <= now_ts and event_end > now_ts and event.all_day == false %}
+      {% assign concurrent_event_count = concurrent_event_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
 
 
 {% comment %}
@@ -194,6 +214,12 @@
 {% else %}
   {% assign _pd = primary_event.start_full | date: '%b %-d' | upcase %}
   {% assign primary_event_time_label = _pd | append: ' AT ' | append: primary_event.start %}
+{% endif %}
+
+{% comment %} Append concurrent event count to time label if multiple events are happening now {% endcomment %}
+{% if primary_label == 'NOW' and concurrent_event_count > 1 %}
+  {% assign _more_count = concurrent_event_count | minus: 1 %}
+  {% assign primary_event_time_label = primary_event_time_label | append: ' + ' | append: _more_count | append: ' more' %}
 {% endif %}
 {% assign _next_ymd = display_next_event.start_full | date: '%Y-%m-%d' %}
 {% if display_next_event == blank %}
