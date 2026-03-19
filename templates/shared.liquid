@@ -49,6 +49,8 @@
 {% endif %}
 {% assign events = calendar.events %}
 {% assign now_ts = 'now' | date: '%s' | plus: 0 %}
+
+
 {% comment %}
   Device helpers — derived from trmnl.device.width/height (logical CSS px, matching framework breakpoints).
     device_size: 'sm' (<800) | 'md' (800–1023) | 'lg' (≥1024)
@@ -96,6 +98,44 @@
     {% endif %}
   {% endunless %}
 {% endfor %}
+
+
+{% comment %}
+  All-day events section logic
+  
+  When show_all_day_events setting is enabled, check for active all-day events
+  (those where end_ts > now_ts). If any exist, prepare them for display instead
+  of showing additional LATER items.
+  
+  Variables:
+  - show_all_day_events_enabled: true if setting is on
+  - active_all_day_events: array of current/ongoing all-day events
+  - has_active_all_day: true if there are active all-day events to show
+  - should_show_all_day: true if we should render ALL DAY EVENTS section
+{% endcomment %}
+{% assign show_all_day_events_enabled = false %}
+{% if trmnl.plugin_settings.custom_fields_values.show_all_day_events == "true" %}
+  {% assign show_all_day_events_enabled = true %}
+{% endif %}
+{% assign active_all_day_events = "" | split: "" %}
+{% assign has_active_all_day = false %}
+{% if show_all_day_events_enabled %}
+  {% for event in events %}
+    {% if event.all_day %}
+      {% assign event_end_ts = event.end_full | date: '%s' | plus: 0 %}
+      {% if event_end_ts > now_ts %}
+        {% assign active_all_day_events = active_all_day_events | push: event %}
+        {% assign has_active_all_day = true %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% assign should_show_all_day = false %}
+{% if show_all_day_events_enabled and has_active_all_day %}
+  {% assign should_show_all_day = true %}
+{% endif %}
+
+
 {% comment %}
   Derived display variables:
   - is_free: true when no event is active right now
@@ -133,6 +173,8 @@
   {% assign primary_event_display = primary_event.summary %}
   {% assign next_event_display = display_next_event.summary %}
 {% endif %}
+
+
 {% comment %}
   Smart time/date labels for the hero and NEXT panels.
   Compares the event date against today (derived from calendar.today_in_tz):

@@ -51,12 +51,32 @@
 
       </div>
 
-      {% comment %} --- LATER panel --- {% endcomment %}
+      {% comment %} --- LATER panel (or ALL DAY EVENTS if enabled and active) --- {% endcomment %}
       <div class="outline rounded--large p--2 flex flex--col gap--small">
 
+        {% if should_show_all_day %}
+        {% render "section_label", text: "ALL DAY EVENTS", inverted: true %}
+        {% else %}
         {% render "section_label", text: "LATER", inverted: true %}
+        {% endif %}
 
         <div class="flex flex--col gap--xsmall lg:gap--small">
+          {% if should_show_all_day %}
+          {% comment %} Show active all-day events {% endcomment %}
+          {% assign all_day_count = 0 %}
+          {% for event in active_all_day_events %}
+            {% assign all_day_count = all_day_count | plus: 1 %}
+            <div class="item">
+              <div class="meta"></div>
+              <div class="content">
+                <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{% if trmnl.plugin_settings.custom_fields_values.capitalize_text == "false" %}{{ event.summary }}{% else %}{{ event.summary | upcase }}{% endif %}</span>
+                {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
+                <span class="label label--small lg:label--base lg:label--outline">{{ event_date_label }}</span>
+              </div>
+            </div>
+          {% endfor %}
+          {% else %}
+          {% comment %} Show future timed events (filter out all-day) {% endcomment %}
           {% assign later_count = 0 %}
           {% for event in events %}
             {% assign start_ts = event.start_full | date: '%s' | plus: 0 %}
@@ -91,13 +111,14 @@
             {% if display_next_event != blank and event.date_time == display_next_event.date_time and event.summary == display_next_event.summary %}
               {% assign is_skip = true %}
             {% endif %}
-            {% if later_eligible_ts > now_ts and is_skip == false and later_count < later_limit %}
+            {% comment %} Only show timed events (not all-day) when in LATER mode {% endcomment %}
+            {% if later_eligible_ts > now_ts and is_skip == false and later_count < later_limit and event.all_day == false %}
             <div class="item">
               <div class="meta"></div>
               <div class="content">
                 <span class="title title--small md:title--medium lg:title--large" data-clamp="1">{% if trmnl.plugin_settings.custom_fields_values.capitalize_text == "false" %}{{ event.summary }}{% else %}{{ event.summary | upcase }}{% endif %}</span>
                 {% assign event_date_label = event.start_full | date: '%b %-d' | upcase %}
-                <span class="label label--small lg:label--base lg:label--outline">{% if event.all_day %}ALL DAY{% else %}{{ event.start }}{% endif %} · {{ event_date_label }}</span>
+                <span class="label label--small lg:label--base lg:label--outline">{{ event.start }} · {{ event_date_label }}</span>
               </div>
             </div>
             {% assign later_count = later_count | plus: 1 %}
@@ -105,6 +126,7 @@
           {% endfor %}
           {% if later_count == 0 %}
           <div class="description">Nothing else scheduled.</div>
+          {% endif %}
           {% endif %}
         </div>
 

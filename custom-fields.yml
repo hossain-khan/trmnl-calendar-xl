@@ -25,6 +25,13 @@
   optional: true
   default: false
 
+- keyname: "show_all_day_events"
+  field_type: "boolean"
+  name: "Show All-Day Events"
+  description: "When enabled, displays active all-day events (trips, holidays, birthdays) in full layout mode. When disabled, it will show more future events from your calendar."
+  optional: true
+  default: false
+
 - keyname: "demo_mode"
   field_type: "boolean"
   name: "Demo Mode"
