@@ -11,10 +11,10 @@
     {% render "section_label", text: primary_label, meta: hero_meta, inverted: true %}
 
     {% if primary_event != blank %}
-    <span class="value value--xxxlarge block lg:hidden"
+    <span class="value value--xxxlarge text--center block lg:hidden"
           data-value-fit="true"
           data-value-fit-max-height="130">{{ primary_event_display }}</span>
-    <span class="value value--xxxlarge hidden lg:block"
+    <span class="value value--xxxlarge text--center hidden lg:block"
           data-value-fit="true"
           data-value-fit-max-height="260">{{ primary_event_display }}</span>
     {% else %}
