@@ -540,6 +540,46 @@ export async function handleSync(request: Request, env: Env) {
 5. Redirects to landing page
 ```
 
+### Flow 6: Returning User Manages Connection
+
+**Scenario**: User previously set up M365 sync and returns days/weeks later to adjust or monitor sync
+
+```
+1. User visits calendar-sync.trmnl.com
+2. Frontend checks localStorage for existing session
+3. Session exists and valid token in KV
+   → Skip landing page, redirect to /dashboard
+4. User lands on Dashboard (no re-auth needed)
+5. Dashboard shows:
+   - ✓ Subscription status: "Active"
+   - ✓ Signed in as: user@example.com
+   - ✓ Last sync: "1 hour ago"
+   - ✓ Current mappings: "2 calendars synced"
+   - ✓ Next scheduled sync: "In 5 hours"
+   - [Sync Now] [Settings] [Sign Out] buttons
+6. User can:
+   - Click [Sync Now] to immediately sync new events
+   - Click [Settings] to adjust which calendars sync
+   - View sync history to debug failed syncs
+   - Change sync frequency (every 6 hours, 12 hours, daily, etc)
+7. Any changes saved to KV immediately
+8. No need to re-authenticate (token auto-refreshes)
+9. User browses away or closes browser
+10. Next visit: Session still valid, lands on Dashboard again
+```
+
+**Session Persistence**:
+- Access token valid for 1 hour, auto-refreshes via refresh token
+- Refresh token valid for 90 days (Microsoft default)
+- After 90 days of inactivity, user must re-authenticate
+- localStorage persists session across browser closes (user context maintained)
+
+**Multi-User Isolation Guarantee**:
+- User A returns to dashboard → sees only User A's data
+- User B on same computer returns → sees only User B's data (separate session)
+- Even if User A's browser is logged in, User B cannot access User A's calendars
+  - Each user has unique OAuth token → different userId in KV → isolated data
+
 ---
 
 ## Technical Architecture
@@ -755,6 +795,183 @@ kvData["settings:{userId}"] = {
 - ✅ CSRF protection via SameSite cookies
 - ✅ XSS protection via Content-Security-Policy
 - ✅ Secrets managed via Cloudflare environment variables
+
+---
+
+## Multi-User Architecture & Isolation
+
+### Architecture Overview
+
+This is a **multi-tenant SaaS portal** where hundreds of independent users can simultaneously:
+- Authenticate with their own M365 accounts
+- Manage their own calendar mappings
+- Sync to their own TRMNL instances
+- View only their own sync history
+
+**Each user operates in complete isolation** — no user can see, access, or modify another user's data.
+
+### Per-User Data Isolation Guarantees
+
+**Authentication Isolation**:
+- ✅ Each user authenticated independently via MSAL.js OAuth flow
+- ✅ Unique session token generated per user (no token sharing)
+- ✅ All API endpoints validate `Authorization: Bearer {token}` header
+- ✅ Token contains encrypted userId, only accessible to user's session
+- ✅ Expired tokens trigger re-authentication (cannot access other users' data with stale token)
+
+**Data Isolation (Cloudflare KV)**:
+- ✅ All KV keys namespaced by userId: `user:{userId}`, `mappings:{userId}`, `sync_history:{userId}`, `settings:{userId}`
+- ✅ Worker validates userId from token against ALL KV operations
+- ✅ No cross-user KV queries possible (KV getter is key-specific, not pattern-based)
+- ✅ Encryption keys derived from userId (even if KV compromised, events remain encrypted per user)
+
+**API Endpoint Protection**:
+Every endpoint implements **user ownership validation**:
+
+```typescript
+// Example: GET /api/calendars
+async function handleGetCalendars(request: Request, env: Env) {
+  const userId = validateAndExtractUserId(request)  // throws if invalid
+  const calendars = await fetchCalendarsFromKV(userId, env)
+  return calendars
+}
+
+// Example: POST /api/sync
+async function handleSync(request: Request, env: Env) {
+  const userId = validateAndExtractUserId(request)  // must match token
+  const userMappings = await KV.get(`mappings:${userId}`, env)  // userId in key
+  if (!userMappings) return error('No calendars configured')
+  // Sync only this user's data
+}
+```
+
+**Protection Against Common Attacks**:
+
+| Attack | Prevention |
+|--------|-----------|
+| Guessing another user's ID | Token validation + cryptographically random IDs (UUIDs) |
+| Accessing `/api/sync` without auth | Bearer token required on all endpoints |
+| Modifying another user's mappings | userId validation on POST /api/mappings |
+| Viewing another user's sync history | userId in KV key + validation at endpoint |
+| Token reuse across users | Token contains encrypted userId, cross-user reuse rejected |
+| Direct KV access | Worker validates userId on every KV get/put |
+| Timing attacks on userId lookups | Same timeout for existing/non-existing users |
+
+### Scalability for Hundreds of Users
+
+**Cloudflare KV Limits** (supports massive scale):
+- ✅ No limit on number of keys (each user gets 4-5 keys: user, mappings, sync_history, settings)
+- ✅ 500+ concurrent requests per region
+- ✅ ~100-200 users per second authentication capacity (MSAL OAuth bottleneck, not our system)
+- ✅ 1GB total storage per account (enough for 100k users × 10KB data each)
+
+**Cron Trigger Scaling**:
+- ✅ Cron runs once per 6 hours (not per user)
+- ✅ Worker loops through active users sequentially
+- ✅ Each user sync takes <10 seconds (includes Microsoft Graph call)
+- ✅ Can sync 360+ users per 6-hour cycle (6 users/minute × 60 minutes)
+- ✅ For 1000 users: running Cron more frequently (every 2 hours) handles it easily
+
+**Example Cron Math**:
+```
+Cycle frequency: Every 6 hours = 4 cycles/day
+Sync time per user: ~8 seconds (graph call + KV write)
+Users per cycle: (6 hours × 3600 sec) / 8 sec = 2,700 users
+Max comfortable users: 500-1000 (headroom for graph latency)
+```
+
+**Cost at Scale** (Cloudflare Workers):
+- ~0.5 MS per request (Workers pricing)
+- Free tier: 100k requests/day
+- Paid: $0.50 per million requests
+- 500 users syncing 4x/day = 2,000 sync ops/day = $1/month
+
+### Future Provider Extensibility
+
+**MVP Scope**: M365 (Microsoft Calendar)
+
+**Phase 2+ Scope**: Multi-provider support
+
+**Architecture for Multiple Providers**:
+
+The backend is designed to support multiple calendar providers with **minimal changes**:
+
+1. **Provider-Agnostic User Flow**:
+```
+Landing Page
+  ↓
+"Choose Calendar Provider"
+  ↓ (option 1) → "Sign in with Microsoft"  [hono/msal-microsoft]
+  ↓ (option 2) → "Sign in with Google"     [hono/msal-google]
+  ↓ (option 3) → "Sign in with Apple"      [hono/msal-apple]
+  ↓ (option 4) → "CalDAV Setup"            [hono/caldav-client]
+```
+
+2. **Modulized Auth Backend**:
+```
+backend/src/auth/
+├── oauth.ts              # Base OAuth handler
+├── providers/
+│   ├── microsoft.ts      # M365 MSAL + Graph
+│   ├── google.ts         # Google OAuth + Calendar API
+│   ├── apple.ts          # Apple OAuth + CalDAV
+│   └── caldav.ts         # CalDAV (Fastmail, etc)
+└── middleware.ts         # Provider-agnostic token validation
+```
+
+3. **Unified KV Schema**:
+```json
+{
+  "user:{userId}": {
+    "email": "user@example.com",
+    "provider": "microsoft",  // "microsoft" | "google" | "apple" | "caldav"
+    "accessToken": "...",
+    "refreshToken": "...",
+    "providerConfig": { /* provider-specific */ }
+  }
+}
+```
+
+4. **Unified Sync Logic**:
+```typescript
+// backend/src/calendar/sync.ts — provider-agnostic
+async function syncUserCalendars(userId: string, env: Env) {
+  const user = await getUser(userId, env)
+  const provider = getProvider(user.provider)  // instantiate correct provider
+  const events = await provider.fetchEvents(user)  // each provider implements this
+  await postToTRMNL(events, env)
+}
+```
+
+5. **Provider Interface** (all providers implement):
+```typescript
+interface CalendarProvider {
+  name: string  // "microsoft" | "google" | "apple" | "caldav"
+  authUrl(state: string): string
+  exchangeCode(code: string): Promise<{ accessToken, refreshToken, expiresIn }>
+  refreshToken(refreshToken: string): Promise<{ accessToken, expiresIn }>
+  fetchCalendars(accessToken: string): Promise<Calendar[]>
+  fetchEvents(accessToken: string, calendarId: string): Promise<Event[]>
+}
+```
+
+**Phase 2 Providers** (post-MVP):
+- ✅ **Google Calendar**: Google OAuth 2.0 + Google Calendar API (similar to Microsoft Graph)
+- ✅ **Apple Calendar / iCloud**: Sign in with Apple + CalDAV protocol
+- ✅ **Fastmail CalDAV**: Open CalDAV standard (no OAuth needed, username/password or access token)
+
+**Migration Path**:
+1. Phase 1: M365 only (hardcoded provider)
+2. Phase 2a: Add Google (provider selection UI)
+3. Phase 2b: Add Apple CalDAV
+4. Phase 2c: Add open CalDAV support (Fastmail, Nextcloud, etc)
+
+**Each provider addition requires**:
+- ✅ New OAuth flow (if supported by provider)
+- ✅ Calendar API client (Graph, Google Calendar API, or CalDAV)
+- ✅ Event fetcher implementation
+- ✅ Minimal UI changes (provider selection screen)
+- ✅ No changes to sync/KV/TRMNL integration
 
 ---
 
