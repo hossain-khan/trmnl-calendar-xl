@@ -554,13 +554,18 @@ export async function handleSync(request: Request, env: Env) {
 - Deploy to Cloudflare Pages
 
 **Backend**:
-- Cloudflare Workers (TypeScript)
+- **Hono** (TypeScript) — Lightweight web framework built for Cloudflare Workers
+  - Fast routing and middleware
+  - Built-in CORS, logging, error handling
+  - Type-safe API definitions
+  - Minimal overhead (~15KB)
 - Wrangler CLI (development)
 - Cloudflare KV (key-value storage)
 - Cloudflare Cron Triggers (scheduled tasks)
+- **hono/jsx** — JSX rendering for HTML responses (error pages, fallbacks)
 
 **Infrastructure**:
-- Cloudflare Pages (static + worker)
+- Cloudflare Pages (static frontend + worker)
 - Cloudflare KV (encrypted data store)
 - Cloudflare Analytics (monitoring)
 
@@ -594,22 +599,26 @@ trmnl-calendar-sync-portal/
 │   ├── vite.config.ts
 │   └── tsconfig.json
 │
-├── backend/                     # Cloudflare Worker
+├── backend/                     # Cloudflare Worker + Hono
 │   ├── src/
 │   │   ├── auth/
-│   │   │   └── oauth.ts        # OAuth flow
+│   │   │   ├── oauth.ts        # MSAL OAuth exchange
+│   │   │   └── middleware.ts   # Bearer token validation
 │   │   ├── calendar/
-│   │   │   ├── graph.ts        # Graph API calls
+│   │   │   ├── graph.ts        # Microsoft Graph API calls
 │   │   │   └── sync.ts         # Sync logic
 │   │   ├── storage/
-│   │   │   └── kv.ts           # KV helpers
+│   │   │   ├── kv.ts           # KV helpers (get/put encrypted)
+│   │   │   └── crypto.ts       # Encryption/decryption utilities
 │   │   ├── api/
-│   │   │   ├── routes.ts       # API endpoints
-│   │   │   └── middleware.ts   # CORS, auth, etc
-│   │   ├── scheduled.ts        # Cron handler
-│   │   └── index.ts            # Entry point
-│   ├── wrangler.toml
-│   ├── package.json
+│   │   │   └── routes.ts       # Hono route definitions
+│   │   ├── views/
+│   │   │   ├── error.tsx       # Error page (hono/jsx)
+│   │   │   └── health.tsx      # Health check page (hono/jsx)
+│   │   ├── scheduled.ts        # Cron handler (Hono scheduled event)
+│   │   └── index.ts            # Hono app entry point
+│   ├── wrangler.toml           # Cloudflare config
+│   ├── package.json            # Dependencies including hono
 │   └── tsconfig.json
 │
 ├── shared/                      # Types, constants
@@ -634,24 +643,32 @@ trmnl-calendar-sync-portal/
                │ HTTP/HTTPS
                ↓
 ┌─────────────────────────────────────┐
-│ Cloudflare Worker (Backend)         │
+│ Cloudflare Workers (Hono App)       │
 │                                     │
 │ ┌─────────────────────────────────┐ │
-│ │ API Routes                      │ │
-│ │ - /auth/login                   │ │
-│ │ - /auth/callback                │ │
-│ │ - /auth/logout                  │ │
-│ │ - /api/calendars                │ │
-│ │ - /api/instances                │ │
-│ │ - /api/mappings                 │ │
-│ │ - /api/sync (manual)            │ │
-│ │ - /api/status                   │ │
+│ │ Hono Middleware                 │ │
+│ │ - CORS handling                 │ │
+│ │ - Bearer token validation       │ │
+│ │ - Error handling                │ │
 │ └─────────────────────────────────┘ │
 │                                     │
 │ ┌─────────────────────────────────┐ │
-│ │ Scheduled Task (Cron)           │ │
-│ │ - Every 6 hours                 │ │
+│ │ Hono Routes                     │ │
+│ │ - POST /auth/callback           │ │
+│ │ - POST /api/sync                │ │
+│ │ - GET /api/calendars            │ │
+│ │ - GET /api/instances            │ │
+│ │ - POST /api/mappings            │ │
+│ │ - GET /api/status               │ │
+│ │ - POST /api/logout              │ │
+│ │ - GET /health (hono/jsx)        │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ Scheduled Handler (Hono)        │ │
+│ │ - Cron: Every 6 hours           │ │
 │ │ - Sync all active users         │ │
+│ │ - Token refresh & validation    │ │
 │ └─────────────────────────────────┘ │
 └──────────────┬──────────────────────┘
                │
@@ -860,28 +877,99 @@ npm run deploy       # Auto-deploy from GitHub
 4. Auto-deploys on push to main
 ```
 
-### Worker Deployment (Wrangler)
+### Worker Deployment (Wrangler + Hono)
 ```bash
 # wrangler.toml configuration
 name = "trmnl-calendar-sync"
-type = "javascript"
-account_id = "..."
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
 workers_dev = true
-routes = [
-  { pattern = "api.trmnl-calendar.workers.dev/*", zone_name = "trmnl-calendar.workers.dev" }
-]
 
 # KV Binding
 [[kv_namespaces]]
 binding = "KV_STORAGE"
 id = "..."
+preview_id = "..."
 
 # Cron Trigger
 [[triggers.crons]]
 crons = ["0 */6 * * *"]  # Every 6 hours
 
+# Package.json dependencies
+{
+  "dependencies": {
+    "hono": "^4.0.0",
+    "@microsoft/msal-node": "^1.18.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+
 # Deploy
-wrangler publish
+wrangler deploy
+```
+
+### Example Hono Application Structure
+```typescript
+// src/index.ts
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { bearerAuth } from 'hono/bearer-auth'
+import authRoutes from './api/routes'
+import { handleScheduled } from './scheduled'
+
+const app = new Hono<{ Bindings: CloudflareBindings }>()
+
+// Middleware
+app.use(cors({ origin: 'https://calendar-sync.trmnl.com' }))
+app.use('/api/*', async (c, next) => {
+  // Token validation middleware
+  await next()
+})
+
+// Routes
+app.route('/auth', authRoutes)
+app.get('/health', (c) => c.json({ status: 'ok' }))
+app.all('*', (c) => c.status(404).json({ error: 'Not found' }))
+
+// Scheduled handler for Cron
+export default {
+  fetch: app.fetch,
+  scheduled: handleScheduled
+}
+```
+
+### HTML Rendering with hono/jsx
+```typescript
+// src/views/error.tsx - Error page using hono/jsx
+import { html } from 'hono/html'
+
+export const ErrorPage = (status: number, message: string) => {
+  return html`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Error</title>
+        <style>
+          body { font-family: sans-serif; margin: 2rem; }
+          .error { color: #d32f2f; }
+        </style>
+      </head>
+      <body>
+        <h1 class="error">${status}</h1>
+        <p>${message}</p>
+      </body>
+    </html>
+  `
+}
+
+// Usage in route
+app.get('/error/:status', (c) => {
+  const status = Number(c.req.param('status'))
+  return c.html(ErrorPage(status, 'Something went wrong'))
+})
 ```
 
 ### Environment Variables
