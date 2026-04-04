@@ -5,6 +5,10 @@
  * 
  * Paste this code into TRMNL Markup Editor > Transform tab
  * 
+ * Note: Transform is a POST-PROCESSOR that works WITH a strategy (plugin_merge, polling, webhook).
+ * Your settings.yml uses strategy: "plugin_merge" to bring in calendar data.
+ * This transform code filters that data BEFORE it reaches the templates.
+ * 
  * Filters merged calendar events to reduce payload size below 100 KB.
  * Keeps only events within a reasonable time window (today + next 30 days)
  * and removes unnecessary bulk (descriptions, attachments, etc.).
