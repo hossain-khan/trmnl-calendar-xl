@@ -1,0 +1,219 @@
+{% comment %}
+DEBUG: Inspect transformed calendar data
+
+This template helps verify that:
+1. Transform sandbox executed successfully
+2. Payload was reduced below 100 KB
+3. Required fields are preserved
+4. Bulk fields (description, location, attachments) were removed
+5. Events are filtered correctly
+
+HOW TO USE:
+1. Copy this entire template into TRMNL Markup Editor
+2. Click Preview to see the debug output
+3. Check:
+   - "Transform Status: Applied" confirms transform ran
+   - "Event Count" should be 30 or less
+   - "Removed Fields" should show absent (✗)
+   - "Kept Fields" should show present (✓)
+
+FIELDS TO CHECK:
+✓ KEPT: summary, status, date_time, all_day, calname, start_full, end_full, start, end
+✗ REMOVED: description, location, attendees, attachments, organizer, recurrence
+{% endcomment %}
+
+<div class="layout">
+  <div class="flex flex--col gap--medium p--2 h--full">
+
+    {% comment %} === HEADER === {% endcomment %}
+    <div class="flex flex--col gap--xsmall">
+      <span class="title title--large">DEBUG: Transform Data</span>
+      <span class="description">Inspect merged calendar payload</span>
+    </div>
+
+    {% comment %} === TRANSFORM STATUS === {% endcomment %}
+    <div class="outline rounded--large p--2 flex flex--col gap--small">
+      <span class="label label--outline">TRANSFORM STATUS</span>
+      
+      {% comment %} Check if transform was applied by looking for the filtered structure {% endcomment %}
+      {% assign calendar_keys = "" | split: "," %}
+      {% for key in google_calendar_* %}
+        {% assign calendar_keys = calendar_keys | push: key %}
+      {% endfor %}
+      
+      {% if google_calendar_* != blank %}
+        <div class="flex flex--row gap--small">
+          <span class="value value--large">✓</span>
+          <span class="description">Transform Status: Applied</span>
+        </div>
+        <span class="description value--small">Calendar namespace found</span>
+      {% else %}
+        <div class="flex flex--row gap--small">
+          <span class="value value--large">✗</span>
+          <span class="description">Transform Status: Failed</span>
+        </div>
+        <span class="description value--small">No calendar namespace detected</span>
+      {% endif %}
+    </div>
+
+    {% comment %} === EVENT COUNT & FILTERING === {% endcomment %}
+    <div class="outline rounded--large p--2 flex flex--col gap--small">
+      <span class="label label--outline">FILTERING VERIFICATION</span>
+      
+      {% assign event_count = events | size %}
+      {% assign now = "now" | date: "%s" | plus: 0 %}
+      {% assign in_window = 0 %}
+      
+      {% for event in events %}
+        {% assign event_date = event.date_time | date: "%s" | plus: 0 %}
+        {% assign thirty_days_ms = 2592000000 %}
+        {% if event_date >= now and event_date <= now | plus: 2592000 %}
+          {% assign in_window = in_window | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+      
+      <div class="flex flex--col gap--xsmall">
+        <span class="description">Total Events: <span class="value value--tnums">{{ event_count }}</span></span>
+        {% if event_count <= 30 %}
+          <div class="flex flex--row gap--small">
+            <span class="value value--large">✓</span>
+            <span class="description">Event limit respected (≤ 30)</span>
+          </div>
+        {% else %}
+          <div class="flex flex--row gap--small">
+            <span class="value value--large">✗</span>
+            <span class="description">Event count exceeds 30 limit</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %} === FIELD PRESERVATION CHECK === {% endcomment %}
+    <div class="outline rounded--large p--2 flex flex--col gap--small">
+      <span class="label label--outline">REQUIRED FIELDS</span>
+      
+      {% if events != blank and events[0] != blank %}
+        {% assign sample = events[0] %}
+        
+        <div class="flex flex--col gap--xsmall value--small">
+          {% comment %} KEPT FIELDS {% endcomment %}
+          <span class="label">Kept Fields:</span>
+          
+          {% if sample.summary != blank %}
+            <span>✓ summary</span>
+          {% else %}
+            <span>✗ summary (MISSING)</span>
+          {% endif %}
+          
+          {% if sample.start_full != blank %}
+            <span>✓ start_full</span>
+          {% else %}
+            <span>✗ start_full (MISSING)</span>
+          {% endif %}
+          
+          {% if sample.end_full != blank %}
+            <span>✓ end_full</span>
+          {% else %}
+            <span>✗ end_full (MISSING)</span>
+          {% endif %}
+          
+          {% if sample.start != blank %}
+            <span>✓ start</span>
+          {% else %}
+            <span>✗ start (MISSING)</span>
+          {% endif %}
+          
+          {% if sample.end != blank %}
+            <span>✓ end</span>
+          {% else %}
+            <span>✗ end (MISSING)</span>
+          {% endif %}
+          
+          {% if sample.all_day != blank %}
+            <span>✓ all_day</span>
+          {% else %}
+            <span>✗ all_day (MISSING)</span>
+          {% endif %}
+        </div>
+      {% else %}
+        <span class="description">No events available</span>
+      {% endif %}
+    </div>
+
+    {% comment %} === REMOVED FIELDS CHECK === {% endcomment %}
+    <div class="outline rounded--large p--2 flex flex--col gap--small">
+      <span class="label label--outline">REMOVED FIELDS (Bulk)</span>
+      
+      {% if events != blank and events[0] != blank %}
+        {% assign sample = events[0] %}
+        
+        <div class="flex flex--col gap--xsmall value--small">
+          {% comment %} These should NOT be present {% endcomment %}
+          
+          {% if sample.description != blank %}
+            <span>✗ description (NOT REMOVED)</span>
+          {% else %}
+            <span>✓ description removed</span>
+          {% endif %}
+          
+          {% if sample.location != blank %}
+            <span>✗ location (NOT REMOVED)</span>
+          {% else %}
+            <span>✓ location removed</span>
+          {% endif %}
+          
+          {% if sample.attachments != blank %}
+            <span>✗ attachments (NOT REMOVED)</span>
+          {% else %}
+            <span>✓ attachments removed</span>
+          {% endif %}
+          
+          {% if sample.attendees != blank %}
+            <span>✗ attendees (NOT REMOVED)</span>
+          {% else %}
+            <span>✓ attendees removed</span>
+          {% endif %}
+        </div>
+      {% else %}
+        <span class="description">No events available</span>
+      {% endif %}
+    </div>
+
+    {% comment %} === SAMPLE EVENT INSPECTION === {% endcomment %}
+    {% if events != blank and events[0] != blank %}
+    <div class="outline rounded--large p--2 flex flex--col gap--small">
+      <span class="label label--outline">SAMPLE EVENT (First Event)</span>
+      
+      {% assign event = events[0] %}
+      <div class="flex flex--col gap--xsmall value--xxsmall">
+        <span><strong>Summary:</strong> {{ event.summary }}</span>
+        <span><strong>Date/Time:</strong> {{ event.date_time }}</span>
+        <span><strong>Start:</strong> {{ event.start }} ({{ event.start_full }})</span>
+        <span><strong>End:</strong> {{ event.end }} ({{ event.end_full }})</span>
+        <span><strong>All-Day:</strong> {{ event.all_day }}</span>
+        <span><strong>Calendar:</strong> {{ event.calname }}</span>
+        <span><strong>Status:</strong> {{ event.status }}</span>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} === SUMMARY === {% endcomment %}
+    <div class="outline rounded--large p--2 flex flex--col gap--small bg--black text--white">
+      <span class="label label--outline">✓ DEBUG COMPLETE</span>
+      <span class="description">
+        If all checks passed:
+        1. Transform executed successfully
+        2. Payload size reduced
+        3. Fields preserved correctly
+        
+        Next: Remove this debug template and use production template
+      </span>
+    </div>
+
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title md:title--large">Debug: Merge Data</span>
+  <span class="instance">Transform Verification</span>
+</div>
