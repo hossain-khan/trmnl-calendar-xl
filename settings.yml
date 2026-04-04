@@ -1,4 +1,4 @@
-strategy: "transform"
+strategy: "plugin_merge"
 refresh_frequency: 1
 
 layouts:
