@@ -32,3 +32,6 @@ jobs:
 
       - name: Validate YAML files
         run: yamllint -c .yamllint.yml settings.yml custom-fields.yml
+
+      - name: Test transform sandbox
+        run: node scripts/test-transform.js
