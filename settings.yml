@@ -1,4 +1,4 @@
-strategy: "static"
+strategy: "transform"
 refresh_frequency: 1
 
 layouts:
