@@ -14,9 +14,35 @@
 const fs = require('fs');
 const path = require('path');
 
-// Load demo data
-const demoDataPath = path.join(__dirname, '../assets/demo/trmnl-plugin-merge-snapshot.json');
-const demoData = JSON.parse(fs.readFileSync(demoDataPath, 'utf8'));
+// Load demo data - support both main snapshot and sample events
+const demoDataPath = path.join(__dirname, '../assets/demo/sample-events.json');
+const fallbackDataPath = path.join(__dirname, '../assets/demo/trmnl-plugin-merge-snapshot.json');
+
+let demoData = null;
+let demoRefDate = null;
+
+try {
+  const sampleEvents = JSON.parse(fs.readFileSync(demoDataPath, 'utf8'));
+  // Wrap sample events in calendar namespace for consistency
+  demoData = {
+    google_calendar_sample: sampleEvents
+  };
+  // Use first event's date if available, otherwise use now
+  if (sampleEvents.events && sampleEvents.events.length > 0) {
+    const firstEvent = sampleEvents.events[0];
+    demoRefDate = new Date(firstEvent.date_time || firstEvent.start_full);
+  }
+} catch {
+  // Fallback to snapshot data
+  const snapshotData = JSON.parse(fs.readFileSync(fallbackDataPath, 'utf8'));
+  demoData = snapshotData;
+  demoRefDate = new Date(snapshotData.google_calendar_123456.today_in_tz);
+}
+
+// Default reference date if not set
+if (!demoRefDate) {
+  demoRefDate = new Date();
+}
 
 // Import transform function (copied from transform-sandbox/transform.js)
 function transform(input, referenceDate = null) {
@@ -132,9 +158,6 @@ console.log('\n📋 Transform Sandbox Test Suite\n');
 console.log('=' .repeat(50));
 
 const results = [];
-
-// Use demo data's reference date for testing (2026-03-17)
-const demoRefDate = new Date(demoData.google_calendar_123456.today_in_tz);
 
 // TEST 1: Transform reduces payload size
 {
