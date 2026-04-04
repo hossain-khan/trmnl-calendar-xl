@@ -15,31 +15,34 @@ TRMNL provides a built-in **Transform Sandbox** that runs JavaScript to filter/r
 
 ## How to Implement
 
-### Step 1: Update Plugin Settings (Done ✓)
+### Step 1: Verify Plugin Settings (Done ✓)
 
-Your `settings.yml` now uses the transform strategy:
+Your `settings.yml` uses the **plugin_merge** strategy to receive calendar data from the merged Google Calendar plugin:
 
 ```yaml
-strategy: "transform"
+strategy: "plugin_merge"
 refresh_frequency: 1
 ```
+
+⚠️ **Important**: `transform` is **NOT** a strategy. Transform is a post-processor that works WITH strategies like `plugin_merge`, `polling`, or `webhook`.
 
 ### Step 2: Add Transform Code to TRMNL Markup Editor
 
 1. Go to **TRMNL Markup Editor**
-2. Click the **Transform** tab (next to Markup tab)
-3. Paste the JavaScript from [transform-endpoint/transform.js](transform-endpoint/transform.js)
-4. **Test**: Force refresh from plugin settings
-5. Verify the payload is now under 100 KB
+2. Click the **Transform** tab (appears next to Markup tab when using any strategy)
+3. Paste the entire JavaScript function from [transform.js](transform.js)
+4. Click **Save**
+5. **Force Refresh**: Go to plugin settings and click Force Refresh
+6. Verify the error disappears in the TRMNL console
 
 ### Step 3: Verify It Works
 
-After pasting the transform code:
+After pasting the transform code and force refreshing:
 
 1. Go back to the **Markup** tab
-2. In the Variables section, you should see the filtered calendar events
-3. Force a refresh from the plugin device or settings screen
-4. The error should disappear in the TRMNL console
+2. Check **Variables** section — you should see `google_calendar_*` with filtered events only
+3. The error about large payload should disappear
+4. Use the debug template to verify fields were removed correctly
 
 ## What the Transform Does
 
