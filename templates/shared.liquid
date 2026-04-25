@@ -283,8 +283,10 @@
   - text     {string}   Label text to display on the left. Required.
   - meta     {string}   Optional secondary text displayed on the right.
                         Pass blank or omit to hide the right slot.
-  - inverted {boolean}  When truthy, applies label--inverted styling (filled pill).
+  - inverted {boolean}  When truthy, applies label--filled styling (filled pill, black bg).
                         Omit or pass false for the default label--underline style.
+                        Note: uses label--filled (v3 preferred name; label--inverted is a
+                        deprecated alias that still works but should not be used going forward).
   Usage:
     {% render "shared", template_name: "section_label", text: "NOW" %}
     {% render "shared", template_name: "section_label", text: "LATER", meta: "3 events" %}
@@ -292,9 +294,9 @@
 {% endcomment %}
 {% template section_label %}
 <div class="flex flex--row flex--between flex--center-y gap--xsmall">
-  <span class="label lg:label--large {% if inverted %}label--inverted{% else %}label--underline{% endif %}">{{ text }}</span>
+  <span class="label lg:label--large {% if inverted %}label--filled{% else %}label--underline{% endif %}">{{ text }}</span>
   {% if meta and meta != blank %}
-  <span class="label lg:label--large {% if inverted %}label--inverted{% endif %}">{{ meta }}</span>
+  <span class="label lg:label--large {% if inverted %}label--filled{% endif %}">{{ meta }}</span>
   {% endif %}
 </div>
 {% endtemplate %}
