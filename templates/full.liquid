@@ -1,4 +1,19 @@
 <div class="layout">
+  {% comment %} WORKAROUND: bg--black / text--white framework utilities are not rendering
+    correctly for the hero panel. cal-xl-hero uses explicit CSS to force the correct
+    colors in both light and dark mode.
+
+    The TRMNL platform adds screen--dark-mode to the outer .screen container when the
+    user enables dark mode — targeting it as an ancestor here handles dark adaptation
+    without any Liquid conditionals.
+
+    To revert: remove this <style> block, remove cal-xl-hero from the hero panel div,
+    and restore text--white bg--black.
+  {% endcomment %}
+  <style>
+    .screen .cal-xl-hero            { background-color: #000 !important; color: #fff !important; }
+    .screen--dark-mode .cal-xl-hero { background-color: #fff !important; color: #000 !important; }
+  </style>
   {% if calendar != blank and events != blank %}
   <div class="flex flex--col gap--medium h--full">
 
@@ -10,7 +25,7 @@
         hidden lg:portrait:block             → lg portrait  (TRMNL X),  fit_height 480
     ============================================================ {% endcomment %}
     {% assign hero_meta = primary_event_time_label %}
-    <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] text--white bg--black">
+    <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] cal-xl-hero">
 
       {% render "section_label", text: primary_label, meta: hero_meta, inverted: true %}
 

@@ -13,12 +13,27 @@
 {% endcomment %}
 
 <div class="layout">
+  {% comment %} WORKAROUND: bg--black / text--white framework utilities are not rendering
+    correctly for the hero panel. cal-xl-hero uses explicit CSS to force the correct
+    colors in both light and dark mode.
+
+    The TRMNL platform adds screen--dark-mode to the outer .screen container when the
+    user enables dark mode — targeting it as an ancestor here handles dark adaptation
+    without any Liquid conditionals.
+
+    To revert: remove this <style> block, remove cal-xl-hero from the hero panel div,
+    and restore text--white bg--black.
+  {% endcomment %}
+  <style>
+    .screen .cal-xl-hero            { background-color: #000 !important; color: #fff !important; }
+    .screen--dark-mode .cal-xl-hero { background-color: #fff !important; color: #000 !important; }
+  </style>
   <div class="grid grid--cols-3 gap--small h--full">
 
     {% comment %} ============================================================
       LEFT COLUMN — NOW hero (col--span-2 ≈ 67% of width)
     ============================================================ {% endcomment %}
-    <div class="col--span-2 rounded--large p--2 flex flex--col gap--small text--white bg--black">
+    <div class="col--span-2 rounded--large p--2 flex flex--col gap--small cal-xl-hero">
 
       {% comment %} Label row: section tag left, event time right {% endcomment %}
       <div class="flex flex--row flex--between flex--center-y gap--xsmall">
