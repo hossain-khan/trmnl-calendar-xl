@@ -14,17 +14,32 @@
 {% endcomment %}
 
 <div class="layout">
+  {% comment %} WORKAROUND: bg--black / text--white framework utilities are not rendering
+    correctly for the hero panel. cal-xl-hero uses explicit CSS to force the correct
+    colors in both light and dark mode.
+
+    The TRMNL platform adds screen--dark-mode to the outer .screen container when the
+    user enables dark mode — targeting it as an ancestor here handles dark adaptation
+    without any Liquid conditionals.
+
+    To revert: remove this <style> block, remove cal-xl-hero from the hero panel div,
+    and restore text--white bg--black.
+  {% endcomment %}
+  <style>
+    .screen .cal-xl-hero            { background-color: #000 !important; color: #fff !important; }
+    .screen--dark-mode .cal-xl-hero { background-color: #fff !important; color: #000 !important; }
+  </style>
   <div class="flex flex--col gap--medium h--full">
 
     {% comment %} ============================================================
       HERO PANEL — NOW (inverted, top 50% of layout height)
     ============================================================ {% endcomment %}
-    <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] text--white bg--black">
+    <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] cal-xl-hero">
 
       {% comment %} Label row: section tag left, event time right {% endcomment %}
       <div class="flex flex--row flex--between flex--center-y gap--xsmall">
-        <span class="label lg:label--large label--inverted">NOW</span>
-        <span class="label lg:label--large label--inverted">2:15 PM – 3:15 PM</span>
+        <span class="label lg:label--large label--filled">NOW</span>
+        <span class="label lg:label--large label--filled">2:15 PM – 3:15 PM</span>
       </div>
 
       {% comment %} Hero title — sm/md devices (hidden on TRMNL X) {% endcomment %}
@@ -54,7 +69,7 @@
 
         {% comment %} Section label row {% endcomment %}
         <div class="flex flex--row flex--between flex--center-y gap--xsmall">
-          <span class="label lg:label--large label--inverted">NEXT</span>
+          <span class="label lg:label--large label--filled">NEXT</span>
         </div>
 
         {% comment %} Event title — scales up on larger screens {% endcomment %}
@@ -70,7 +85,7 @@
 
         {% comment %} Section label row {% endcomment %}
         <div class="flex flex--row flex--between flex--center-y gap--xsmall">
-          <span class="label lg:label--large label--inverted">LATER</span>
+          <span class="label lg:label--large label--filled">LATER</span>
         </div>
 
         {% comment %} Later items list — gap scales up on lg {% endcomment %}
