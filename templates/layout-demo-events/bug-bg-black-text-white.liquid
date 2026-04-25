@@ -1,0 +1,81 @@
+{% comment %}
+  BUG REPORT: bg--black and text--white framework utilities do not render correctly.
+
+  Expected behaviour:
+    - The hero panel has a solid black background (#000)
+    - All text inside the hero panel is white (#fff)
+
+  Actual behaviour:
+    - The background does not appear black (appears white / transparent)
+    - Text is not visible or appears dark on a light background
+
+  How to reproduce:
+    1. Paste this file into the TRMNL Markup Editor
+    2. Preview on any device (TRMNL OG, TRMNL X, etc.)
+    3. Observe the large center panel — it should be solid black with white text
+
+  Framework version: 2.3.7 (also reproduced after upgrading to v3)
+  Affected utilities: bg--black, text--white
+  Selector confirmed present in CSS: .trmnl .bg--black { background-color: #000 }
+{% endcomment %}
+
+<div class="layout">
+  <div class="flex flex--col gap--medium h--full">
+
+    {% comment %} ============================================================
+      HERO PANEL — uses ONLY framework utilities bg--black and text--white.
+      No custom CSS, no workaround.
+
+      Expected: solid black panel with white label + white value text.
+      Bug: background is not black / text is not white.
+    ============================================================ {% endcomment %}
+    <div class="rounded--large p--2 flex flex--col gap--small h--[60cqh] text--white bg--black">
+
+      {% comment %} Section label row {% endcomment %}
+      <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+        <span class="label lg:label--large label--filled">NOW</span>
+        <span class="label lg:label--large label--filled">2:15 PM – 3:15 PM</span>
+      </div>
+
+      {% comment %} Hero value — should appear WHITE on a BLACK background {% endcomment %}
+      <span class="value value--xxxlarge text--center block lg:hidden"
+            data-value-fit="true"
+            data-value-fit-max-height="150">TEAM STANDUP</span>
+      <span class="value value--xxxlarge text--center hidden lg:block"
+            data-value-fit="true"
+            data-value-fit-max-height="320">TEAM STANDUP</span>
+
+    </div>
+
+    {% comment %} ============================================================
+      BOTTOM ROW — normal outlined panels for contrast reference.
+      These should look unchanged (white bg, black border, black text).
+    ============================================================ {% endcomment %}
+    <div class="grid grid--cols-2 gap--medium grow">
+
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+        <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+          <span class="label lg:label--large label--filled">NEXT</span>
+        </div>
+        <div class="value text--center value--small md:value--medium lg:value--large">DESIGN REVIEW</div>
+        <div class="value text--center value--xsmall md:value--small">4:00 PM – 5:00 PM</div>
+      </div>
+
+      <div class="outline rounded--large p--2 flex flex--col gap--small">
+        <div class="flex flex--row flex--between flex--center-y gap--xsmall">
+          <span class="label lg:label--large label--filled">LATER</span>
+        </div>
+        <div class="flex flex--col gap--xsmall">
+          <div class="title title--small md:title--medium lg:title--large">DINNER RESERVATION</div>
+          <span class="label label--small lg:label--outline">7:00 PM · APR 25</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="title_bar">
+  <span class="title">BUG: bg--black / text--white</span>
+</div>
