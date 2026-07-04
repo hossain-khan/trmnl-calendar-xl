@@ -1,3 +1,4 @@
+# CI workflow updated to run on Node 24 with latest action versions to avoid deprecation warnings.
 name: CI
 
 on:
