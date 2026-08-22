@@ -295,9 +295,9 @@
 {% endcomment %}
 {% template section_label %}
 <div class="flex flex--row flex--between flex--center-y gap--xsmall">
-  <span class="label lg:label--large {% if inverted %}label--filled{% else %}label--underline{% endif %}">{{ text }}</span>
+  <span class="label lg:label--large {% if inverted %}label--filled text--white{% else %}label--underline{% endif %}">{{ text }}</span>
   {% if meta and meta != blank %}
-  <span class="label lg:label--large {% if inverted %}label--filled{% endif %}">{{ meta }}</span>
+  <span class="label lg:label--large {% if inverted %}label--filled text--white{% endif %}">{{ meta }}</span>
   {% endif %}
 </div>
 {% endtemplate %}
